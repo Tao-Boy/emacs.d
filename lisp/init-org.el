@@ -18,6 +18,8 @@
   (setq org-format-latex-options
 	(plist-put org-format-latex-options :scale 1.3))
 
+  (setq org-link-file-path-type 'relative)
+
   (add-to-list 'org-src-lang-modes '("python" . python-ts))
   (add-to-list 'org-src-lang-modes '("bash" . bash-ts))
   (add-to-list 'org-src-lang-modes '("sh" . bash-ts))
