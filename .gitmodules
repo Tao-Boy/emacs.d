@@ -1,0 +1,8 @@
+[submodule "rime-data"]
+	path = rime-data
+	url = https://github.com/Tao-Boy/rime-frost.git
+	ignore = all
+[submodule "librime"]
+	path = librime
+	url = https://github.com/Tao-Boy/emacs-librime.git
+	ignore = all

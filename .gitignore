@@ -1,0 +1,11 @@
+auto-save-list/
+custom.el
+.cache/
+eln-cache/
+rime/
+eshell/
+recentf.eld
+tramp
+elpa/
+.org-id-locations
+tree-sitter/
