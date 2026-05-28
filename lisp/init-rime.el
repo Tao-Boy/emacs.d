@@ -10,19 +10,9 @@
     (concat user-emacs-directory "emacs-header/31")))
   (t nil))
 
-(defvar-local librime-root
-    (cond
-     ((eq system-type 'gnu/linux)
-      (concat user-emacs-directory "librime/linux"))
-     ((eq system-type 'darwin)
-      (concat user-emacs-directory "librime/macos"))
-     ((eq system-type 'windows-nt)
-      (concat user-emacs-directory "librime/windows"))
-     (t nil)))
-
 (setq default-input-method "rime")
 
-(setq rime-librime-root librime-root
+(setq rime-librime-root (concat user-emacs-directory "librime")
       rime-emacs-module-header-root emacs-header-path
       rime-share-data-dir (concat user-emacs-directory "rime-data"))
  
