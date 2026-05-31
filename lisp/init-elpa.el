@@ -1,5 +1,6 @@
 ;; -*- lexical-binding: t; -*-
 
+(require 'package)
 (setq package-selected-packages nil)
 
 (setq package-archives '(("gnu" . "https://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
@@ -12,13 +13,13 @@
   (unless (package-installed-p package min-version)
     (unless (or tau--package--refreshed
                 (assoc package package-archive-contents))
-      (package-refresh-contents)
-      (setq tau--package--refreshed t))
+      (package-refresh-contents))
+      (setq tau--package--refreshed t)
     (package-install package)))
 
 (setq package-install-upgrade-built-in t)
 
-(require-package 'org '(9 8 4))
+(require-package 'org '(9 8 5))
 (require-package 'rime)
 (require-package 'corfu)
 (require-package 'auctex)
