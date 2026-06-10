@@ -29,13 +29,6 @@
 
   (require 'org-tempo)
 
-  (tempo-define-template
-   "org-html-theme"
-   '("#+SETUPFILE: https://fniessen.github.io/org-html-themes/org/html-theme-readtheorg.setup" n)
-   "<set"
-   "Insert org-html-themes setupfile"
-   'org-tempo-tags)
-  
   (add-to-list 'org-structure-template-alist '("py" . "src python"))
   (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
   (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))

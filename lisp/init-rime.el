@@ -11,6 +11,15 @@
 (when (eq system-type 'windows-nt)
   (setq rime-librime-root (concat user-emacs-directory "librime")))
 
+(when (eq system-type 'darwin)
+  (setq rime-librime-root "/opt/homebrew"))
+
+(cond
+ ((eq system-type 'windows-nt)
+  (setq rime-librime-root (concat user-emacs-directory "librime")))
+ ((eq system-type 'darwin)
+  (setq rime-librime-root "/opt/homebrew")))
+
 (setq rime-emacs-module-header-root emacs-header-path
       rime-share-data-dir (concat user-emacs-directory "rime-data"))
  
