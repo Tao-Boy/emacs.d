@@ -7,13 +7,17 @@
 
 (add-hook 'emacs-startup-hook
           (lambda ()
-            (setq file-name-handler-alist tau--file-name-handler-alist)))
+            (setq file-name-handler-alist
+                  (delete-dups (append file-name-handler-alist
+                                       tau--file-name-handler-alist)))))
 
 ;; Native compilation runs asynchronously in the background; silence its
 ;; warnings/errors popup so it doesn't interrupt.
 (setq native-comp-async-report-warnings-errors 'silent)
 
 (setq package-enable-at-startup nil
+      package-quickstart t
+      package-quickstart-file (expand-file-name "package-quickstart.el" user-emacs-directory)
       warning-suppress-types '((files)))
 
 (prefer-coding-system 'utf-8)

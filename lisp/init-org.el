@@ -20,6 +20,17 @@
 
   (setq org-link-file-path-type 'relative)
 
+  (setq org-roam-directory (expand-file-name "~/org/roam/")
+	org-roam-completion-everywhere t)
+
+  (with-eval-after-load 'org-roam
+    (org-roam-db-autosync-mode))
+
+  (global-set-key (kbd "C-c n f") #'org-roam-node-find)
+  (global-set-key (kbd "C-c n i") #'org-roam-node-insert)
+  (global-set-key (kbd "C-c n c") #'org-roam-capture)
+  (global-set-key (kbd "C-c n b") #'org-roam-buffer-toggle)
+
   (add-to-list 'org-src-lang-modes '("python" . python-ts))
   (add-to-list 'org-src-lang-modes '("bash" . bash-ts))
   (add-to-list 'org-src-lang-modes '("sh" . bash-ts))

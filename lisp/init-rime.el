@@ -8,12 +8,6 @@
 
 (setq default-input-method "rime")
 
-(when (eq system-type 'windows-nt)
-  (setq rime-librime-root (concat user-emacs-directory "librime")))
-
-(when (eq system-type 'darwin)
-  (setq rime-librime-root "/opt/homebrew"))
-
 (cond
  ((eq system-type 'windows-nt)
   (setq rime-librime-root (concat user-emacs-directory "librime")))
@@ -27,8 +21,23 @@
   (setq rime-show-candidate 'posframe
 	rime-posframe-style 'vertical))
 
+(defun my/rime-predicate-org-latex-mode-p ()
+  "Return non-nil when point is strictly inside an Org LaTeX element."
+  (and (derived-mode-p 'org-mode)
+       (fboundp 'org-element-context)
+       (let* ((context (org-element-context))
+              (type (org-element-type context)))
+         (and (memq type '(latex-fragment latex-environment))
+              (let* ((begin (org-element-property :begin context))
+                     (end (org-element-property :end context))
+                     (post-blank (or (org-element-property :post-blank context) 0))
+                     (strict-end (and end (- end post-blank))))
+                (and begin strict-end
+                     (>= (point) begin)
+                     (< (point) strict-end)))))))
+
 (setq rime-disable-predicates
-      '(rime-predicate-org-latex-mode-p
+      '(my/rime-predicate-org-latex-mode-p
 	rime-predicate-space-after-cc-p
 	rime-predicate-after-ascii-char-p
 	rime-predicate-punctuation-line-begin-p))

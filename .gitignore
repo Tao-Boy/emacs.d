@@ -7,5 +7,8 @@ eshell/
 recentf.eld
 tramp
 elpa/
+package-quickstart.el
+package-quickstart.elc
+*.db
 .org-id-locations
 tree-sitter/

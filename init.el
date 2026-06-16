@@ -17,16 +17,23 @@
 (setq custom-file
       (expand-file-name "custom.el" user-emacs-directory))
 
+(defun tau-require-modules (&rest modules)
+  (dolist (module modules)
+    (require module)))
+
 (with-temp-message ""
-  (require 'init-autoload)
-  (require 'init-generic)
-  (require 'init-keymaps)
-  (require 'init-treesitter)
-  (require 'init-elpa)
-  (require 'init-rime)
-  (require 'init-corfu)
-  (require 'init-cdlatex)
-  (require 'init-org)
-  (require 'init-rainbow)
-  (require 'init-font)
-  )
+  ;; Core startup and package activation.
+  (tau-require-modules
+   'init-elpa
+   'init-generic
+   'init-font)
+
+  ;; Language and feature configuration.  These modules avoid eager package
+  ;; loads and install hooks/autoload-friendly settings only.
+  (tau-require-modules
+   'init-treesitter
+   'init-rime
+   'init-corfu
+   'init-cdlatex
+   'init-org
+   'init-rainbow))
