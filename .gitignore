@@ -1,0 +1,87 @@
+# ==========================================================================
+# Emacs configuration -- files that must not be versioned
+# ==========================================================================
+#
+# Rule of thumb: anything that Emacs regenerates on its own (caches,
+# bytecode, package installs, session state) is ignored.  Only the
+# hand-written configuration (init.el, early-init.el, lisp/**, custom.el)
+# is meant to be tracked.
+
+
+# --------------------------------------------------------------------------
+# Byte-compiled and natively-compiled output
+# --------------------------------------------------------------------------
+*.elc
+*.eln
+*.eln.*
+eln-cache/
+native-comp/
+
+
+# --------------------------------------------------------------------------
+# Installed packages -- restored with M-x package-install or
+# M-x package-refresh-contents, never edited by hand
+# --------------------------------------------------------------------------
+elpa/
+archives/
+straight/
+elpaca/
+package-quickstart.el
+package-quickstart.elc
+
+
+# --------------------------------------------------------------------------
+# Session and cache state written by Emacs itself
+# --------------------------------------------------------------------------
+auto-save-list/
+auto-save/
+history
+savehist
+bookmarks
+recentf
+places
+desktop
+desktop.lock
+url/
+transient/
+eshell/
+tramp
+tramp-histfile
+semanticdb/
+srecode/
+.gc-lock
+.cache/
+.lsp-session-*
+.idlerc/
+
+
+# --------------------------------------------------------------------------
+# Org-mode caches (the knowledge base itself lives outside this directory,
+# in ~/org; only throw-away state belongs here)
+# --------------------------------------------------------------------------
+org-persist/
+.org-id-locations
+org-roam.db
+*.sqlite
+*.sqlite3
+
+
+# --------------------------------------------------------------------------
+# Version-specific copies of emacs-module.h, regenerated from the Emacs
+# installation when a dynamic module is built.  This configuration loads
+# no modules, so they are not part of it.
+# --------------------------------------------------------------------------
+emacs-header/
+
+
+# --------------------------------------------------------------------------
+# Editor / tooling leftovers
+# --------------------------------------------------------------------------
+*~
+\#*\#
+.\#*
+*.orig
+*.rej
+*_flymake.*
+*_flycheck.*
+flycheck_*.el
