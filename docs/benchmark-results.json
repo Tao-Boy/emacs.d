@@ -1,0 +1,145 @@
+{
+  "sequential": {
+    "before": {
+      "emacs": "31.1",
+      "runs": 9,
+      "median": {
+        "startup_seconds": 0.34620792,
+        "startup_gcs": 1,
+        "startup_libraries": 165,
+        "completion_activation_seconds": 9.67e-07,
+        "first_org_buffer_seconds": 0.078832435,
+        "first_prog_buffer_seconds": 0.011999604
+      },
+      "startup_samples_seconds": [
+        0.330592995,
+        0.32631532,
+        0.320472575,
+        0.34620792,
+        0.361866416,
+        0.348286161,
+        0.327699303,
+        0.382346934,
+        0.389640702
+      ]
+    },
+    "after-source": {
+      "emacs": "31.1",
+      "runs": 9,
+      "median": {
+        "startup_seconds": 0.23612273,
+        "startup_gcs": 1,
+        "startup_libraries": 88,
+        "completion_activation_seconds": 0.025311354,
+        "first_org_buffer_seconds": 0.147554682,
+        "first_prog_buffer_seconds": 0.010390767
+      },
+      "startup_samples_seconds": [
+        0.235078145,
+        0.305527916,
+        0.251499708,
+        0.23612273,
+        0.275310496,
+        0.229865912,
+        0.228838845,
+        0.240521929,
+        0.234319162
+      ]
+    },
+    "after-cached": {
+      "emacs": "31.1",
+      "runs": 9,
+      "median": {
+        "startup_seconds": 0.259017454,
+        "startup_gcs": 1,
+        "startup_libraries": 78,
+        "completion_activation_seconds": 0.028856176,
+        "first_org_buffer_seconds": 0.149074062,
+        "first_prog_buffer_seconds": 0.010645222
+      },
+      "startup_samples_seconds": [
+        0.259017454,
+        0.500988402,
+        0.500109202,
+        0.27149815,
+        0.230828951,
+        0.233476362,
+        0.222719236,
+        0.290167588,
+        0.224132981
+      ]
+    },
+    "after-compiled": {
+      "emacs": "31.1",
+      "runs": 9,
+      "median": {
+        "startup_seconds": 0.336171216,
+        "startup_gcs": 1,
+        "startup_libraries": 78,
+        "completion_activation_seconds": 0.036559732,
+        "first_org_buffer_seconds": 0.216872809,
+        "first_prog_buffer_seconds": 0.016432273
+      },
+      "startup_samples_seconds": [
+        0.313348154,
+        0.373608177,
+        0.282454713,
+        0.315319637,
+        0.412261368,
+        0.436387222,
+        0.302771301,
+        0.336171216,
+        0.435456735
+      ]
+    }
+  },
+  "interleaved": {
+    "current": {
+      "emacs": "31.1",
+      "runs": 9,
+      "median": {
+        "startup_seconds": 0.269789942,
+        "startup_gcs": 1,
+        "startup_libraries": 78,
+        "completion_activation_seconds": 0.030661362,
+        "first_org_buffer_seconds": 0.157725392,
+        "first_prog_buffer_seconds": 0.010414336
+      },
+      "startup_samples_seconds": [
+        0.385511999,
+        0.249353239,
+        0.230776928,
+        0.235119531,
+        0.379616295,
+        0.269789942,
+        0.297248205,
+        0.26783983,
+        0.279256129
+      ]
+    },
+    "reference": {
+      "emacs": "31.1",
+      "runs": 9,
+      "median": {
+        "startup_seconds": 0.393663061,
+        "startup_gcs": 1,
+        "startup_libraries": 165,
+        "completion_activation_seconds": 8.42e-07,
+        "first_org_buffer_seconds": 0.084192576,
+        "first_prog_buffer_seconds": 0.01349784
+      },
+      "startup_samples_seconds": [
+        0.42043627,
+        0.321452309,
+        0.387829766,
+        0.345788739,
+        0.405878991,
+        0.401487217,
+        0.387725983,
+        0.393663061,
+        0.420393673
+      ]
+    },
+    "paired_startup_improvement_percent": 31.962163450230342
+  }
+}

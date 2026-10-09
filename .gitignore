@@ -4,7 +4,7 @@
 #
 # Rule of thumb: anything that Emacs regenerates on its own (caches,
 # bytecode, package installs, session state) is ignored.  Only the
-# hand-written configuration (init.el, early-init.el, lisp/**, custom.el)
+# hand-written configuration (init.el, early-init.el, lisp/**, *.example.el)
 # is meant to be tracked.
 
 
@@ -85,3 +85,9 @@ emacs-header/
 *_flymake.*
 *_flycheck.*
 flycheck_*.el
+
+# Private overrides and generated state
+/local.el
+/custom.el
+/var/
+__pycache__/

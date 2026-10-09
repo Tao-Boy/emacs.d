@@ -1,0 +1,22 @@
+name: Emacs configuration
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  offline-check:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Emacs and ripgrep
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y emacs-nox ripgrep
+      - name: Check a clean checkout without third-party packages
+        run: emacs -Q --batch -l scripts/check.el
+      - name: Compile with warnings treated as errors
+        run: emacs -Q --batch -l scripts/compile.el
+      - name: Check compiled configuration
+        run: emacs -Q --batch -l scripts/check.el
