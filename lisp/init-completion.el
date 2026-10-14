@@ -1,41 +1,60 @@
-;; -*- lexical-binding: t; -*-
+;;; init-completion.el --- Minibuffer and in-buffer completion -*- lexical-binding: t; -*-
 
-(setq corfu-auto t
-      corfu-auto-delay 0
-      corfu-auto-prefix 1
-      corfu-quit-no-match 'separator)
+;;; Commentary:
 
-(add-hook 'prog-mode-hook #'corfu-mode)
+;; Vertico + Orderless + Marginalia in the minibuffer, Corfu in
+;; buffers.  The minibuffer UI is enabled right before the first
+;; command instead of during startup.
 
-(with-eval-after-load 'corfu
-  (define-key corfu-map (kbd "TAB") nil)
-  (define-key corfu-map (kbd "RET") 'corfu-insert))
+;;; Code:
 
-(require 'vertico)
+(setq completion-ignore-case t
+      read-file-name-completion-ignore-case t
+      read-buffer-completion-ignore-case t
+      ;; Emacs 30: don't offer dictionary words in `text-mode' buffers.
+      text-mode-ispell-word-completion nil)
 
-;; Fido/icomplete and Vertico are mutually exclusive: both install
-;; themselves into the minibuffer, which results in duplicated
-;; candidates and broken completion.  `init-org.el' may have enabled
-;; Fido as a fallback, so make sure the built-in UI is off again before
-;; activating Vertico.
-(when (fboundp 'fido-mode)
-  (fido-mode -1))
-(when (fboundp 'fido-vertical-mode)
-  (fido-vertical-mode -1))
-(when (bound-and-true-p icomplete-mode)
-  (icomplete-mode -1))
+;;;; Minibuffer
 
-(vertico-mode 1)
-(setq vertico-cycle t)
-(setq vertico-count 8)
+(use-package vertico
+  :ensure t
+  :hook (tau-first-input . vertico-mode)
+  :custom
+  (vertico-cycle t)
+  (vertico-count 8))
 
-(require 'orderless)
-(setq completion-styles '(orderless basic)
-      completion-category-defaults nil
-      completion-category-overrides
-      '((file (styles partial-completion))))
+;; The `orderless' style is registered by the package autoloads, so
+;; the library itself loads on the first completion.
+(use-package orderless
+  :ensure t
+  :defer t
+  :custom
+  (completion-styles '(orderless basic))
+  (completion-category-defaults nil)
+  (completion-category-overrides '((file (styles partial-completion))))
+  ;; Emacs 31: let `partial-completion' match substrings as well.
+  (completion-pcm-leading-wildcard t))
 
-(require 'marginalia)
-(marginalia-mode 1)
+(use-package marginalia
+  :ensure t
+  :hook (tau-first-input . marginalia-mode))
+
+;;;; In-buffer completion
+
+;; On Emacs 31 Corfu also pops up in terminals, using TTY child frames.
+(use-package corfu
+  :ensure t
+  :hook (prog-mode . corfu-mode)
+  :custom
+  (corfu-auto t)
+  ;; A small delay and a two-character prefix avoid running every
+  ;; completion backend on each keystroke.
+  (corfu-auto-delay 0.1)
+  (corfu-auto-prefix 2)
+  (corfu-quit-no-match 'separator)
+  :bind (:map corfu-map
+              ("TAB" . nil)            ; Keep TAB for indentation.
+              ("RET" . corfu-insert)))
 
 (provide 'init-completion)
+;;; init-completion.el ends here

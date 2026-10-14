@@ -1,15 +1,19 @@
-;; -*- lexical-binding: t; -*-
+;;; init-const.el --- Constants -*- lexical-binding: t; -*-
 
-(defconst sys/win32p
-  (eq system-type 'windows-nt)
-  "Is running on a WinTel system?")
+;;; Commentary:
 
-(defconst sys/linuxp
-  (eq system-type 'gnu/linux)
-  "Is running on a GNU/Linux system?")
+;; Platform predicates used by the other modules.
 
-(defconst sys/macp
-  (eq system-type 'darwin)
-  "Is running on a Mac system?")
+;;; Code:
+
+(defconst sys/win32p (eq system-type 'windows-nt)
+  "Non-nil on Microsoft Windows.")
+
+(defconst sys/linuxp (eq system-type 'gnu/linux)
+  "Non-nil on GNU/Linux.")
+
+(defconst sys/macp (eq system-type 'darwin)
+  "Non-nil on macOS.")
 
 (provide 'init-const)
+;;; init-const.el ends here

@@ -33,6 +33,7 @@ package-quickstart.elc
 # --------------------------------------------------------------------------
 # Session and cache state written by Emacs itself
 # --------------------------------------------------------------------------
+tree-sitter/
 auto-save-list/
 auto-save/
 history
