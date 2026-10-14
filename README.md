@@ -1,7 +1,7 @@
 # emacs.d
 
 面向 **Emacs 31.1** 的个人配置：Evil + Vertico/Orderless/Marginalia/Corfu +
-Org 知识库（基于 Org ID、fd、ripgrep，无数据库）。
+Org + [Denote](https://protesilaos.com/emacs/denote) 笔记。
 
 结构与启动优化参考了 [minimal-emacs.d](https://github.com/jamescherti/minimal-emacs.d)、
 [Doom Emacs](https://github.com/doomemacs/doomemacs)、
@@ -24,8 +24,7 @@ Org 知识库（基于 Org ID、fd、ripgrep，无数据库）。
 | `lisp/init-dired.el` | Dired、Dired-X |
 | `lisp/init-prog.el` | 行号、括号配对、tree-sitter、Eglot |
 | `lisp/init-latex.el` | AUCTeX |
-| `lisp/init-org.el` | Org 设置与知识库路径 (`tau-org-*`) |
-| `lisp/tau-org.el` | 知识库命令，通过 `C-c n` 按键自动加载 |
+| `lisp/init-org.el` | Org、Denote |
 | `custom.el` | Customize 保存的设置 |
 
 ## 启动优化
@@ -41,7 +40,7 @@ Org 知识库（基于 Org ID、fd、ripgrep，无数据库）。
 5. **`:ensure` 快速路径**：`use-package` 的 `:ensure` 每次都会加载 package.el；
    `tau-package-ensure` 先用 `package-installed-p`（Emacs 31 预加载，
    quickstart 下直接查 `package-activated-list`）判断，已安装的包零开销。
-6. **延迟加载**：Org、Dired、AUCTeX、Eglot、知识库命令都在首次使用时加载；
+6. **延迟加载**：Org、Denote、Dired、AUCTeX、Eglot 都在首次使用时加载；
    Vertico、Marginalia、savehist、recentf、which-key、auto-revert、so-long
    在第一次按键前（`tau-first-input-hook`）才启用；`*scratch*` 使用
    `fundamental-mode`，避免启动时触发 `prog-mode-hook`。
@@ -60,7 +59,7 @@ Emacs 31.1（原生编译、tree-sitter）在终端（`-nw`）中各启动 10 �
 | 旧配置（加上 `regexp-opt` 修复后才能启动） | 288 ms | 273 |
 | 新配置 | 142 ms | 189 |
 
-Org、package.el、Vertico、Corfu、Dired、tree-sitter 都不在启动时加载；剩余耗时
+Org、Denote、package.el、Vertico、Corfu、Dired、tree-sitter 都不在启动时加载；剩余耗时
 主要是 Evil（约 35 ms）和主题（约 17 ms）。
 
 ## 用到的 Emacs 31 新特性
@@ -93,21 +92,28 @@ emacs                                   # 首次启动自动安装软件包
 `M-x emacs-init-time`。用 `emacs --debug-init` 启动时会记录 `use-package`
 统计信息，可通过 `M-x use-package-report` 查看各包耗时。
 
-### 知识库命令（`C-c n`）
+### 笔记（Denote，`C-c n`）
+
+笔记放在 `~/org/notes/`（`denote-directory`），每条笔记一个文件，文件名形如
+`20261014T130053--标题__关键词.org`，按领域放在子目录中（新建时先选子目录）。
+笔记之间用 `[[denote:标识符]]` 链接。
 
 | 按键 | 命令 |
 | --- | --- |
-| `C-c n n` | 新建笔记（带 Org ID） |
-| `C-c n f` | 打开知识库中的 Org 文件 |
-| `C-c n j` | 跳转到节点 |
-| `C-c n i` | 插入节点的 ID 链接 |
-| `C-c n b` | 当前节点的反向链接 |
-| `C-c n s` | ripgrep 全文搜索（`C-u` 为字面搜索） |
-| `C-c n R` | 重建 Org ID 数据库 |
-| `C-c n I` | 为当前标题创建 ID（仅 Org 中） |
+| `C-c n n` | `denote`：新建笔记（子目录、标题、关键词） |
+| `C-c n f` | `denote-open-or-create`：打开笔记，不存在则新建 |
+| `C-c n i` | `denote-link-or-create`：插入笔记链接，不存在则新建 |
+| `C-c n l` | `denote-find-link`：跳转到当前笔记链接到的笔记 |
+| `C-c n b` | `denote-backlinks`：反向链接列表 |
+| `C-c n B` | `denote-find-backlink`：跳转到某条反向链接 |
+| `C-c n s` | `denote-grep`：全文搜索 |
+| `C-c n r` | `denote-rename-file`：修改标题/关键词并重命名文件 |
+| `C-c n R` | `denote-rename-file-using-front-matter`：按文件头重命名 |
+| `C-c n d` | `denote-sort-dired`：在 Dired 中筛选、排序笔记 |
+| `C-c c n` | 通过 `org-capture` 新建 Denote 笔记 |
 
-`M-x tau-org-initialize-directories` 创建知识库目录结构。外部依赖：`rg`（必需）、
-`fd`（可选，缺失时用 Lisp 遍历目录）、`dvisvgm`（可选，SVG 公式预览）。
+反向链接和全文搜索通过 xref 进行，安装了 `rg` 时自动使用 ripgrep。
+`dvisvgm`（可选）用于 SVG 公式预览。
 
 ## 相对旧配置的行为变化
 
@@ -119,6 +125,11 @@ emacs                                   # 首次启动自动安装软件包
 - Evil 使用内置的 `undo-redo`，`C-r` 可以重做。
 - `*scratch*` 使用 `fundamental-mode`；需要求值时用 `M-x lisp-interaction-mode`。
 - 不再手动开启 `xterm-mouse-mode`（Emacs 31 在兼容终端中默认开启）。
+- Org 笔记部分改用 Denote，自写的知识库命令（`tau-org.el`）、`tau-org-*` 选项以及
+  为它服务的 Org ID 设置（`org-id-link-to-org-use-id` 等、`C-c n I`）已删除。
+  旧笔记的文件名 `时间戳--标题.org` 已是 Denote 格式，可以直接使用；旧的
+  `[[id:…]]` 链接仍可跳转（加载 Org 时会加载 org-id），但不计入 Denote 的反向链接，
+  可以用 `denote-rename-file` 补上关键词、逐步改为 `denote:` 链接。
 - 新增：which-key、recentf、saveplace、auto-revert、so-long（均延迟启用），
   中文标点/假名/注音字体与 emoji 字体，Dired 显示可读文件大小并目录优先（Linux），
   Eglot 默认关闭事件日志并在最后一个缓冲区关闭时停止服务器。

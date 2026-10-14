@@ -32,7 +32,7 @@ running %s, some features will be missing or broken." emacs-version)))
 (require 'init-dired)
 (require 'init-prog)         ; Tree-sitter, Eglot, programming defaults
 (require 'init-latex)        ; AUCTeX
-(require 'init-org)          ; Org and the note-taking commands
+(require 'init-org)          ; Org and Denote
 
 ;;;; Customize
 
