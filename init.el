@@ -33,6 +33,8 @@ running %s, some features will be missing or broken." emacs-version)))
 (require 'init-prog)         ; Tree-sitter, Eglot, programming defaults
 (require 'init-latex)        ; AUCTeX
 (require 'init-org)          ; Org and Denote
+(require 'init-rime)         ; Chinese input: Rimel + liberime
+(require 'init-ai)           ; ECA
 
 ;;;; Customize
 

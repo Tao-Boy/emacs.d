@@ -34,6 +34,14 @@ package-quickstart.elc
 # Session and cache state written by Emacs itself
 # --------------------------------------------------------------------------
 tree-sitter/
+/liberime/
+/eca/
+# Rime state; customizations such as rime/default.custom.yaml stay tracked
+/rime/build/
+/rime/sync/
+/rime/*.userdb/
+/rime/installation.yaml
+/rime/user.yaml
 auto-save-list/
 auto-save/
 history
