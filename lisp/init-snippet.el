@@ -1,14 +1,25 @@
-;; -*- lexical-binding: t; -*-
+;;; init-snippet.el --- Templates and auto-expanding snippets -*- lexical-binding: t; -*-
 
-(add-hook 'org-mode-hook #'aas-activate-for-major-mode)
+;;; Commentary:
 
-(with-eval-after-load 'tempel
-  (define-key tempel-map (kbd "TAB") #'tempel-next)
-  (define-key tempel-map (kbd "<tab>") #'tempel-next)
-  (define-key tempel-map (kbd "<backtab>") #'tempel-previous)
-  (define-key tempel-map (kbd "S-TAB") #'tempel-previous))
+;; Tempel templates, plus AAS snippets that expand LaTeX math as you
+;; type in Org buffers.  Both load with the first Org buffer.
 
-(with-eval-after-load 'aas
+;;; Code:
+
+(use-package tempel
+  :ensure t
+  :defer t
+  :bind (:map tempel-map
+              ("TAB" . tempel-next)
+              ("<tab>" . tempel-next)
+              ("<backtab>" . tempel-previous)
+              ("S-TAB" . tempel-previous)))
+
+(use-package aas
+  :ensure t
+  :hook (org-mode . aas-activate-for-major-mode)
+  :config
   (aas-set-snippets 'org-mode
     :cond (lambda () (not (org-inside-LaTeX-fragment-p)))
     "mk" '(tempel "\\(" p "\\)" q)
@@ -17,7 +28,7 @@
            p
            n "\\]" q)
 
-    :cond #'org-inside-LaTeX-fragment-p
+    :cond (lambda () (org-inside-LaTeX-fragment-p))
     ";a" "\\alpha"
     ";b" "\\beta"
     ";g" "\\gamma"
@@ -54,11 +65,11 @@
     ";Y" "\\Psi"
     ";O" "\\Omega"
 
-					;    "->" "\\to"
-					;    "<-" "\\leftarrow"
-					;    "=>" "\\implies"
-					;    "=<" "\\impliedby"
-					;    "<=>" "\\iff"
+    ;; "->" "\\to"
+    ;; "<-" "\\leftarrow"
+    ;; "=>" "\\implies"
+    ;; "=<" "\\impliedby"
+    ;; "<=>" "\\iff"
 
     "<=" "\\leq"
     ">=" "\\geq"
@@ -87,47 +98,47 @@
     "exp" "\\exp"
 
     "ff" '(tempel
-	   "\\frac{" p "}{" p "}" q)
+           "\\frac{" p "}{" p "}" q)
     "sq" '(tempel
-	   "\\sqrt{" p "}" q)
+           "\\sqrt{" p "}" q)
 
     "sr" "^{2}"
     "cb" "^{3}"
 
     "sum" '(tempel
-	    "\\sum_{" (p "i=1") "}^{"
-	    (p "n") "} " q)
+            "\\sum_{" (p "i=1") "}^{"
+            (p "n") "} " q)
 
     "prod" '(tempel
-	     "\\prod_{" (p "i=1") "}^{"
-	     (p "n") "} " q)
+             "\\prod_{" (p "i=1") "}^{"
+             (p "n") "} " q)
 
     "int" '(tempel
-	    "\\int_{" (p "a") "}^{"
-	    (p "b") "} "
-	    p
-	    "\\, d" (p "x") q)
+            "\\int_{" (p "a") "}^{"
+            (p "b") "} "
+            p
+            "\\, d" (p "x") q)
 
     "lim" '(tempel
-	    "\\lim_{"
-	    (p "n") " \\to "
-	    (p "\\infty")
-	    "} " q)
+            "\\lim_{"
+            (p "n") " \\to "
+            (p "\\infty")
+            "} " q)
 
     "lr(" '(tempel
-	    "\\left(" p "\\right)" q)
+            "\\left(" p "\\right)" q)
 
     "lr[" '(tempel
-	    "\\left[" p "\\right]" q)
+            "\\left[" p "\\right]" q)
 
     "lr{" '(tempel
-	    "\\left\\{" p "\\right\\}" q)
+            "\\left\\{" p "\\right\\}" q)
 
     "lr|" '(tempel
-	    "\\left|" p "\\right|" q)
+            "\\left|" p "\\right|" q)
 
     "jk" '(tempel "_{" p "}" q)
-    "kj" '(tempel "^{" p "}" q)
-    ))
+    "kj" '(tempel "^{" p "}" q)))
 
 (provide 'init-snippet)
+;;; init-snippet.el ends here
