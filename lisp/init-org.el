@@ -68,12 +68,13 @@
   (org-log-done 'time)
   (org-log-into-drawer t)
 
-  ;; Mathematics.  `org-use-sub-superscripts' set to {} means only
-  ;; x_{i} is a subscript, so identifiers such as wave_function or R_s
+  ;; Mathematics.  LaTeX stays plain text: \alpha is not displayed as α
+  ;; and x_{i} is not raised; fragments and scripts are only colored.
+  ;; `org-use-sub-superscripts' set to {} means only x_{i} is a
+  ;; subscript on export, so identifiers such as wave_function or R_s
   ;; stay ordinary text.
   (org-highlight-latex-and-related '(latex script entities))
-  (org-pretty-entities t)
-  (org-pretty-entities-include-sub-superscripts t)
+  (org-pretty-entities nil)
   (org-use-sub-superscripts '{})
   :config
   ;; Notes written before the switch to Denote link to each other with

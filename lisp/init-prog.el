@@ -17,8 +17,8 @@
 ;;;; Tree-sitter
 
 (defvar tau-github-mirror "https://gh-proxy.com/github.com/"
-  "URL prefix that replaces \"https://github.com/\" for git, or nil.
-Used when downloading tree-sitter grammars.")
+  "URL prefix that replaces \"https://github.com/\", or nil for none.
+Used when downloading tree-sitter grammars and prebuilt liberime.")
 
 (defun tau--call-with-github-mirror (fn &rest args)
   "Call FN with ARGS while git fetches GitHub through `tau-github-mirror'.
