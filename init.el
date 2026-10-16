@@ -26,7 +26,7 @@ running %s, some features will be missing or broken." emacs-version)))
 (require 'init-package)      ; package.el + use-package
 (require 'init-basic)        ; Better defaults, GC policy, session state
 (require 'init-ui)           ; Theme, fonts, mode line, scrolling
-(require 'init-evil)
+(require 'init-keybindings) ; Native keys plus a few additions
 (require 'init-completion)   ; Vertico, Orderless, Marginalia, Corfu
 (require 'init-snippet)      ; Tempel, AAS
 (require 'init-dired)

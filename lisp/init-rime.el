@@ -176,11 +176,10 @@ example one built with `liberime-build'."
   (rimel-schema "luna_pinyin_simp")
   (rimel-show-candidate 'posframe)
   ;; Type English without toggling: in code, after Latin letters, for
-  ;; capitals, in Evil's normal state, in source blocks and in math.
+  ;; capitals, in source blocks and in math.
   (rimel-disable-predicates '(rimel-predicate-prog-in-code-p
                               rimel-predicate-after-alphabet-char-p
                               rimel-predicate-current-uppercase-letter-p
-                              rimel-predicate-evil-mode-p
                               rimel-predicate-org-in-src-block-p
                               rimel-predicate-org-latex-mode-p
                               rimel-predicate-tex-math-or-command-p)))
