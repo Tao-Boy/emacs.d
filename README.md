@@ -1,6 +1,6 @@
 # emacs.d
 
-面向 **Emacs 31.1** 的个人配置：Evil + Vertico/Orderless/Marginalia/Corfu +
+面向 **Emacs 31.1** 的个人配置：原生 Emacs 按键 + Vertico/Orderless/Marginalia/Corfu +
 Org + [Denote](https://protesilaos.com/emacs/denote) 笔记。
 
 结构与启动优化参考了 [minimal-emacs.d](https://github.com/jamescherti/minimal-emacs.d)、
@@ -18,7 +18,7 @@ Org + [Denote](https://protesilaos.com/emacs/denote) 笔记。
 | `lisp/init-package.el` | 软件源、`use-package`、`:ensure` 快速路径 |
 | `lisp/init-basic.el` | 运行期 GC 策略、`tau-first-input-hook`、默认设置、savehist/recentf/saveplace |
 | `lisp/init-ui.el` | 主题、字体（含中文和 emoji）、mode line、括号、滚动、终端 |
-| `lisp/init-evil.el` | Evil |
+| `lisp/init-keybindings.el` | 原生按键的增强与自定义按键、expreg |
 | `lisp/init-completion.el` | Vertico、Orderless、Marginalia、Corfu |
 | `lisp/init-snippet.el` | Tempel、AAS（Org 中的 LaTeX 数学片段） |
 | `lisp/init-dired.el` | Dired、Dired-X |
@@ -43,7 +43,7 @@ Org + [Denote](https://protesilaos.com/emacs/denote) 笔记。
    `tau-package-ensure` 先用 `package-installed-p`（Emacs 31 预加载，
    quickstart 下直接查 `package-activated-list`）判断，已安装的包零开销。
 6. **延迟加载**：Org、Denote、Dired、AUCTeX、Eglot、Rime、ECA 都在首次使用时加载；
-   Vertico、Marginalia、savehist、recentf、which-key、auto-revert、so-long
+   Vertico、Marginalia、savehist、recentf、which-key、auto-revert、so-long、repeat-mode
    在第一次按键前（`tau-first-input-hook`）才启用；`*scratch*` 使用
    `fundamental-mode`，避免启动时触发 `prog-mode-hook`。
 7. **frame 参数**：在 `early-init.el` 中关闭菜单栏/工具栏/滚动条，并预设主题
@@ -61,8 +61,8 @@ Emacs 31.1（原生编译、tree-sitter）在终端（`-nw`）中各启动 10 �
 | 旧配置（加上 `regexp-opt` 修复后才能启动） | 288 ms | 273 |
 | 新配置 | 142 ms | 189 |
 
-Org、Denote、package.el、Vertico、Corfu、Dired、tree-sitter 都不在启动时加载；剩余耗时
-主要是 Evil（约 35 ms）和主题（约 17 ms）。
+Org、Denote、package.el、Vertico、Corfu、Dired、tree-sitter 都不在启动时加载。
+以上数据测于移除 Evil 之前，当时 Evil 约占 35 ms、主题约 17 ms；现在不再加载 Evil。
 
 ## 用到的 Emacs 31 新特性
 
@@ -94,6 +94,47 @@ emacs                                   # 首次启动自动安装软件包
 `M-x emacs-init-time`。用 `emacs --debug-init` 启动时会记录 `use-package`
 统计信息，可通过 `M-x use-package-report` 查看各包耗时。
 
+### 按键
+
+使用 Emacs 原生按键，`lisp/init-keybindings.el` 在此基础上做了少量增强。被改动的按键
+仍然做原来的事，只是更顺手；按下前缀后稍等，which-key 会列出后续按键。
+
+**全局模式**（首次按键时启用）：`repeat-mode`（`C-x o o o`、`C-x u u`、`C-x { {`、
+`M-g n n` 等只需重复最后一个键）、`delete-selection-mode`（输入内容会替换选区）。
+
+| 按键 | 命令 |
+| --- | --- |
+| `C-a` | 先到行首缩进处，再按一次到真正的行首（Org 中仍是 `org-beginning-of-line`） |
+| `C-w` | 有选区时剪切选区，否则剪切当前行 |
+| `M-w` | 有选区时复制选区，否则复制当前行 |
+| `M-<up>` / `M-<down>` | 上下移动当前行或选区所在的行（Org 中仍是 `org-metaup/down`） |
+| `C-c d` | `duplicate-dwim`：复制当前行或选区 |
+| `C-=` / `C--` | `expreg`：逐步扩大 / 缩小选区（有 tree-sitter 时按语法节点）；负数参数用 `M--` |
+| `M-z` | `zap-up-to-char`：删除到某字符之前（不含该字符） |
+| `M-/` | `hippie-expand` |
+| `C-g` | 同时能关闭 `*Completions*` 窗口，焦点不在 minibuffer 时也能退出 minibuffer |
+| `M-o` | `other-window` |
+| `C-x 2` / `C-x 3` | 分割窗口并切换到新窗口 |
+| `C-x k` | 直接关闭当前缓冲区（`kill-current-buffer`，不再询问） |
+| `C-x C-b` | `ibuffer` |
+| `C-x C-r` | `recentf-open`：打开最近的文件 |
+| `C-z` | 取消绑定，避免误触最小化；需要时用 `C-x C-z` |
+
+| 按键 | 命令 |
+| --- | --- |
+| `C-c f r` | `recentf-open`：最近的文件 |
+| `C-c f R` | `rename-visited-file`：重命名当前文件 |
+| `C-c f y` | 复制当前文件路径（`C-u` 复制所在目录；Dired 中复制当前目录） |
+| `C-c f s` | 通过 TRAMP 以 root 身份编辑当前文件（`C-u` 选择其他文件） |
+| `C-c t l` | 行号 |
+| `C-c t w` | `visual-line-mode`（软换行） |
+| `C-c t t` | 截断长行 |
+| `C-c t s` | `whitespace-mode` |
+| `C-c t f` | 全屏 |
+
+撤销 `C-/`（或 `C-x u`），重做 `C-?`（或 `C-M-_`，终端中使用后者）。
+`C-=`、`C--`、`C-?` 在多数终端中无法输入，只在图形界面中可用。
+
 ### 笔记（Denote，`C-c n`）
 
 笔记放在 `~/org/notes/`（`denote-directory`），每条笔记一个文件，文件名形如
@@ -120,8 +161,8 @@ emacs                                   # 首次启动自动安装软件包
 ### 中文输入（Rimel，`C-\`）
 
 `C-\` 切换输入法，默认方案 `luna_pinyin_simp`，候选显示在光标旁的子窗口中
-（Emacs 31 的终端里也可以）。在代码、英文字母之后、大写字母、Evil normal
-state、Org 源码块和数学公式中自动输入英文。`M-i` 把光标前的拼音转换成汉字。
+（Emacs 31 的终端里也可以）。在代码、英文字母之后、大写字母、Org
+源码块和数学公式中自动输入英文。`M-i` 把光标前的拼音转换成汉字。
 
 第一次按 `C-\` 时，如果找不到 liberime 模块，会询问是否下载
 [liberime](https://github.com/emacs-rime/liberime/releases) 的预编译版本
@@ -167,7 +208,8 @@ Rime 用户数据保存在 `rime/`，第一次启用时部署词库需要一些�
 - Corfu 自动补全改为 0.1 秒延迟、2 个字符触发（原为 0 秒、1 个字符），减少每次按键的开销。
 - tree-sitter 语法库改用 Emacs 31 自带的固定版本配方（仍走 gh-proxy 镜像），
   不再跟踪各仓库的最新提交；缺少语法库时询问是否安装，拒绝或失败时退回传统模式。
-- Evil 使用内置的 `undo-redo`，`C-r` 可以重做。
+- 不再使用 Evil，改用 Emacs 原生按键，另加了一些自定义按键（见上文“按键”）；
+  `rimel-predicate-evil-mode-p` 随之移除；行号改为绝对行号（配合 `M-g g`）。
 - `*scratch*` 使用 `fundamental-mode`；需要求值时用 `M-x lisp-interaction-mode`。
 - 不再手动开启 `xterm-mouse-mode`（Emacs 31 在兼容终端中默认开启）。
 - Org 笔记部分改用 Denote，自写的知识库命令（`tau-org.el`）、`tau-org-*` 选项以及
