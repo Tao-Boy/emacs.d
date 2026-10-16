@@ -16,19 +16,29 @@
               ("<backtab>" . tempel-previous)
               ("S-TAB" . tempel-previous)))
 
+(defun tau-org-in-math-p ()
+  "Non-nil if point is inside LaTeX math in an Org buffer.
+Uses `org-ratex-in-math-p' when org-ratex is available: Org's own
+`org-inside-LaTeX-fragment-p' fails in a whole \\[...\\] once one of its
+lines starts with \"- \", \"+ \" or \"1. \", which Org reads as a list item."
+  (if (fboundp 'org-ratex-in-math-p)
+      (org-ratex-in-math-p)
+    (org-inside-LaTeX-fragment-p)))
+
 (use-package aas
   :ensure t
   :hook (org-mode . aas-activate-for-major-mode)
   :config
+  (require 'org-ratex nil t)
   (aas-set-snippets 'org-mode
-    :cond (lambda () (not (org-inside-LaTeX-fragment-p)))
+    :cond (lambda () (not (tau-org-in-math-p)))
     "mk" '(tempel "\\(" p "\\)" q)
     "dm" '(tempel
            "\\[" n>
            p
            n "\\]" q)
 
-    :cond (lambda () (org-inside-LaTeX-fragment-p))
+    :cond #'tau-org-in-math-p
     ";a" "\\alpha"
     ";b" "\\beta"
     ";g" "\\gamma"

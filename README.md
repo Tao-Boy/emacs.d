@@ -20,13 +20,14 @@ Org + [Denote](https://protesilaos.com/emacs/denote) 笔记。
 | `lisp/init-ui.el` | 主题、字体（含中文和 emoji）、mode line、括号、滚动、终端 |
 | `lisp/init-keybindings.el` | 原生按键的增强与自定义按键、expreg |
 | `lisp/init-completion.el` | Vertico、Orderless、Marginalia、Corfu |
-| `lisp/init-snippet.el` | Tempel、AAS（Org 中的 LaTeX 数学片段） |
+| `lisp/init-snippet.el` | Tempel、AAS（Org 中的 LaTeX 数学片段，用 `org-ratex-in-math-p` 判断是否在公式内） |
 | `lisp/init-dired.el` | Dired、Dired-X |
 | `lisp/init-prog.el` | 行号、括号配对、tree-sitter、Eglot |
 | `lisp/init-latex.el` | AUCTeX |
 | `lisp/init-org.el` | Org、Denote |
 | `lisp/init-rime.el` | 中文输入：Rimel + 预编译的 liberime |
 | `lisp/init-ai.el` | ECA（Editor Code Assistant） |
+| `site-lisp/org-ratex.el` | org-ratex：用 RaTeX 的 `render-svg` 预览 Org 中的公式；其 `org-ratex-in-math-p` 不受 `- ` 开头的行被解析为列表项影响 |
 | `custom.el` | Customize 保存的设置 |
 
 ## 启动优化
