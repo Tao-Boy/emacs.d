@@ -80,13 +80,15 @@ ARCHIVE is the release file name, MODULE the module's path inside it."
     (unless (eq status 0)
       (error "Could not unpack %s (exit status %s)" archive status))))
 
+(defvar tau-github-mirror)
+
 (defun tau-liberime-install ()
   "Download and unpack the prebuilt liberime into `tau-liberime-directory'."
   (interactive)
   (let* ((archive (or (car (tau-liberime--archive))
                       (user-error "No prebuilt liberime for %s" system-configuration)))
          (url (format "%semacs-rime/liberime/releases/download/%s/%s"
-                      (or (bound-and-true-p tau-github-mirror) "https://github.com/")
+                      (or tau-github-mirror "https://github.com/")
                       tau-liberime-version archive))
          (file (expand-file-name archive temporary-file-directory)))
     (make-directory tau-liberime-directory t)
@@ -149,13 +151,18 @@ example one built with `liberime-build'."
       (when (eq system-type 'windows-nt)
         (tau-liberime--preload-dlls (file-name-directory module))))))
 
+(defvar liberime-load-on-require)
+
+;; Don't start Rime when the library loads, but when `liberime-load'
+;; is called (by rimel), after `tau-liberime--prepare'.  Also at compile
+;; time: when this file is byte-compiled, use-package loads liberime
+;; before any of its keywords (even `:preface') is evaluated.
+(eval-and-compile
+  (setq liberime-load-on-require nil))
+
 (use-package liberime
   :ensure t
   :defer t
-  :init
-  ;; Don't start Rime when the library loads, but when `liberime-load'
-  ;; is called (by rimel), after `tau-liberime--prepare'.
-  (setq liberime-load-on-require nil)
   :config
   (advice-add 'liberime-load :before #'tau-liberime--prepare))
 

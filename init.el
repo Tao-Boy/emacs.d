@@ -23,13 +23,13 @@ running %s, some features will be missing or broken." emacs-version)))
 ;;;; Modules
 
 (require 'init-const)
-(require 'init-package)      ; package.el + use-package
+(require 'init-package)      ; Mirrors, package.el + use-package
 (require 'init-basic)        ; Better defaults, GC policy, session state
 (require 'init-ui)           ; Theme, fonts, mode line, scrolling
-(require 'init-keybindings) ; Native keys plus a few additions
+(require 'init-keybindings)  ; Native keys plus a few additions
 (require 'init-completion)   ; Vertico, Orderless, Marginalia, Corfu
 (require 'init-snippet)      ; Tempel, AAS
-(require 'init-dired)
+(require 'init-dired)        ; Dired, Dired-X
 (require 'init-prog)         ; Tree-sitter, Eglot, programming defaults
 (require 'init-latex)        ; AUCTeX
 (require 'init-org)          ; Org and Denote

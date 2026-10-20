@@ -16,6 +16,9 @@
               ("<backtab>" . tempel-previous)
               ("S-TAB" . tempel-previous)))
 
+(declare-function org-inside-LaTeX-fragment-p "org")
+(declare-function org-ratex-in-math-p "org-ratex")
+
 (defun tau-org-in-math-p ()
   "Non-nil if point is inside LaTeX math in an Org buffer.
 Uses `org-ratex-in-math-p' when org-ratex is available: Org's own

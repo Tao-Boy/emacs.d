@@ -2,6 +2,8 @@
 
 ;;; Commentary:
 
+;; Package archive and GitHub mirrors, package.el and use-package.
+;;
 ;; Packages are activated before init.el by `package-quickstart' (see
 ;; early-init.el), so package.el itself is not needed at startup.  The
 ;; only thing that would load it is `use-package's `:ensure', which
@@ -11,12 +13,21 @@
 
 ;;; Code:
 
+;;;; Mirrors
+
+(defvar tau-elpa-mirror "https://mirrors.ustc.edu.cn/elpa/"
+  "URL under which the gnu, nongnu and melpa archives are mirrored.")
+
+(defvar tau-github-mirror "https://gh-proxy.com/github.com/"
+  "URL prefix that replaces \"https://github.com/\", or nil for none.
+Used when downloading tree-sitter grammars and prebuilt liberime.")
+
 ;;;; Archives
 
 (setq package-archives
-      '(("gnu"    . "https://mirrors.ustc.edu.cn/elpa/gnu/")
-        ("nongnu" . "https://mirrors.ustc.edu.cn/elpa/nongnu/")
-        ("melpa"  . "https://mirrors.ustc.edu.cn/elpa/melpa/"))
+      (mapcar (lambda (archive)
+                (cons archive (concat tau-elpa-mirror archive "/")))
+              '("gnu" "nongnu" "melpa"))
       package-archive-priorities '(("gnu" . 3) ("melpa" . 2) ("nongnu" . 1))
       package-install-upgrade-built-in nil
       package-check-signature nil)
