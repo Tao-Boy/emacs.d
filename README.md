@@ -15,7 +15,7 @@ Org + [Denote](https://protesilaos.com/emacs/denote) 笔记。
 | `early-init.el` | GC、启动期 I/O 优化、package quickstart、原生编译、frame 参数 |
 | `init.el` | 版本检查、按顺序加载 `lisp/` 下的模块、加载 `custom.el` |
 | `lisp/init-const.el` | 平台常量 |
-| `lisp/init-package.el` | 软件源、`use-package`、`:ensure` 快速路径 |
+| `lisp/init-package.el` | ELPA 与 GitHub 镜像（`tau-elpa-mirror`、`tau-github-mirror`）、软件源、`use-package`、`:ensure` 快速路径 |
 | `lisp/init-basic.el` | 运行期 GC 策略、`tau-first-input-hook`、默认设置、savehist/recentf/saveplace |
 | `lisp/init-ui.el` | 主题、字体（含中文和 emoji）、mode line、括号、滚动、终端 |
 | `lisp/init-keybindings.el` | 原生按键的增强与自定义按键、expreg |

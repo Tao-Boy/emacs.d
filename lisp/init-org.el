@@ -105,7 +105,7 @@
          ("R" . denote-rename-file-using-front-matter)
          ("d" . denote-sort-dired))
   :custom
-  (denote-directory (expand-file-name "~/org/notes/"))
+  (denote-directory (expand-file-name "notes/" org-directory))
   ;; One subdirectory per area, as before the switch to Denote.
   (denote-prompts '(subdirectory title keywords))
   (denote-known-keywords '("math" "physics" "methods" "references"))

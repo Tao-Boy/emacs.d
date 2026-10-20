@@ -12,22 +12,35 @@
 (defvar tau-gc-cons-threshold (* 64 1024 1024)
   "Value of `gc-cons-threshold' after startup.")
 
+(defun tau--gc-defer ()
+  "Don't collect garbage until `tau--gc-restore'."
+  (setq gc-cons-threshold most-positive-fixnum))
+
+(defun tau--gc-restore ()
+  "Restore the run-time GC threshold, unless a minibuffer is still open.
+`minibuffer-exit-hook' runs while the exited minibuffer still counts
+towards `minibuffer-depth', so with recursive minibuffers the threshold
+stays raised until the outermost one exits."
+  (when (<= (minibuffer-depth) 1)
+    (setq gc-cons-threshold tau-gc-cons-threshold)))
+
+(defun tau--gc-when-unfocused ()
+  "Collect garbage when Emacs loses focus, when a pause goes unnoticed."
+  (unless (frame-focus-state)
+    (garbage-collect)))
+
+;; The minibuffer hooks are installed only after startup, so that a
+;; prompt shown while the init files load cannot end the startup GC
+;; pause early.  Completion UIs allocate a lot; don't GC while the
+;; minibuffer is open.
 (add-hook 'emacs-startup-hook
           (lambda ()
             (setq gc-cons-threshold tau-gc-cons-threshold
-                  gc-cons-percentage 0.1)))
-
-;; Collect while the frame is unfocused, when a pause goes unnoticed.
-(add-function :after after-focus-change-function
-              (lambda ()
-                (unless (frame-focus-state)
-                  (garbage-collect))))
-
-;; Completion UIs allocate a lot; don't GC while the minibuffer is open.
-(add-hook 'minibuffer-setup-hook
-          (lambda () (setq gc-cons-threshold most-positive-fixnum)))
-(add-hook 'minibuffer-exit-hook
-          (lambda () (setq gc-cons-threshold tau-gc-cons-threshold)))
+                  gc-cons-percentage 0.1)
+            (add-hook 'minibuffer-setup-hook #'tau--gc-defer)
+            (add-hook 'minibuffer-exit-hook #'tau--gc-restore)
+            (add-function :after after-focus-change-function
+                          #'tau--gc-when-unfocused)))
 
 ;;;; Deferred loading
 

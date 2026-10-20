@@ -17,15 +17,14 @@
 
 ;;;; Tree-sitter
 
-(defvar tau-github-mirror "https://gh-proxy.com/github.com/"
-  "URL prefix that replaces \"https://github.com/\", or nil for none.
-Used when downloading tree-sitter grammars and prebuilt liberime.")
+(defvar tau-github-mirror)
 
 (defun tau--call-with-github-mirror (fn &rest args)
   "Call FN with ARGS while git fetches GitHub through `tau-github-mirror'.
-The URL rewrite is passed to git through its environment (git 2.31+),
-so the pinned grammar recipes that Emacs 31 ships are kept as is and
-no global git configuration is touched."
+The URL rewrite (`tau-github-mirror' is defined in `init-package') is
+passed to git through its environment (git 2.31+), so the pinned
+grammar recipes that Emacs 31 ships are kept as is and no global git
+configuration is touched."
   (if (not tau-github-mirror)
       (apply fn args)
     (let* ((n (string-to-number (or (getenv "GIT_CONFIG_COUNT") "0")))

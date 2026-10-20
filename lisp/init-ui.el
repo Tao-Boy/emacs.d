@@ -83,20 +83,15 @@ Return non-nil if the display is graphical."
   :config
   ;; Override specs take precedence over the theme and, unlike
   ;; `custom-set-faces', are never written to `custom-file'.
-  (dolist (spec '((rainbow-delimiters-depth-1-face :foreground "#FFD700")
-                  (rainbow-delimiters-depth-2-face :foreground "#DA70D6")
-                  (rainbow-delimiters-depth-3-face :foreground "#179FFF")
-                  (rainbow-delimiters-depth-4-face :foreground "#00E5A8")
-                  (rainbow-delimiters-depth-5-face :foreground "#FF8C00")
-                  (rainbow-delimiters-depth-6-face :foreground "#B56DFF")
-                  (rainbow-delimiters-depth-7-face :foreground "#FFD700")
-                  (rainbow-delimiters-depth-8-face :foreground "#DA70D6")
-                  (rainbow-delimiters-depth-9-face :foreground "#179FFF")
-                  (rainbow-delimiters-unmatched-face
-                   :foreground "#F44747" :weight bold)
-                  (rainbow-delimiters-mismatched-face
-                   :foreground "#F44747" :weight bold :underline t)))
-    (face-spec-set (car spec) `((t ,(cdr spec))))))
+  ;; Depths 7-9 repeat the colors of depths 1-3.
+  (let ((colors ["#FFD700" "#DA70D6" "#179FFF" "#00E5A8" "#FF8C00" "#B56DFF"]))
+    (dotimes (i 9)
+      (face-spec-set (intern (format "rainbow-delimiters-depth-%d-face" (1+ i)))
+                     `((t :foreground ,(aref colors (% i (length colors)))))))
+    (face-spec-set 'rainbow-delimiters-unmatched-face
+                   '((t :foreground "#F44747" :weight bold)))
+    (face-spec-set 'rainbow-delimiters-mismatched-face
+                   '((t :foreground "#F44747" :weight bold :underline t)))))
 
 ;;;; Scrolling
 
