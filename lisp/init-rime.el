@@ -151,13 +151,18 @@ example one built with `liberime-build'."
       (when (eq system-type 'windows-nt)
         (tau-liberime--preload-dlls (file-name-directory module))))))
 
+(defvar liberime-load-on-require)
+
+;; Don't start Rime when the library loads, but when `liberime-load'
+;; is called (by rimel), after `tau-liberime--prepare'.  Also at compile
+;; time: when this file is byte-compiled, use-package loads liberime
+;; before any of its keywords (even `:preface') is evaluated.
+(eval-and-compile
+  (setq liberime-load-on-require nil))
+
 (use-package liberime
   :ensure t
   :defer t
-  :init
-  ;; Don't start Rime when the library loads, but when `liberime-load'
-  ;; is called (by rimel), after `tau-liberime--prepare'.
-  (setq liberime-load-on-require nil)
   :config
   (advice-add 'liberime-load :before #'tau-liberime--prepare))
 
