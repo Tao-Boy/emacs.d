@@ -38,6 +38,7 @@ tree-sitter/
 /eca/
 # Rime state; customizations such as rime/default.custom.yaml stay tracked
 /rime/build/
+/rime/log/
 /rime/sync/
 /rime/*.userdb/
 /rime/installation.yaml

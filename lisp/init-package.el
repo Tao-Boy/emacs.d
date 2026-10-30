@@ -5,11 +5,11 @@
 ;; Package archive and GitHub mirrors, package.el and use-package.
 ;;
 ;; Packages are activated before init.el by `package-quickstart' (see
-;; early-init.el), so package.el itself is not needed at startup.  The
-;; only thing that would load it is `use-package's `:ensure', which
-;; requires package.el unconditionally; `tau-package-ensure' skips that
-;; when the package is already installed, so package.el is only loaded
-;; when something actually has to be installed.
+;; early-init.el), so package.el itself is not needed at startup.
+;; `use-package's `:ensure' requires package.el unconditionally;
+;; `tau-package-ensure' skips that when the package is already installed.
+;; Rimel uses :vc instead, which also checks package-installed-p before
+;; loading package-vc to install a missing checkout.
 
 ;;; Code:
 
@@ -20,7 +20,7 @@
 
 (defvar tau-github-mirror "https://gh-proxy.com/github.com/"
   "URL prefix that replaces \"https://github.com/\", or nil for none.
-Used when downloading tree-sitter grammars and prebuilt liberime.")
+Used when downloading tree-sitter grammars.")
 
 ;;;; Archives
 
