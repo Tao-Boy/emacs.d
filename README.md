@@ -1,6 +1,6 @@
 # emacs.d
 
-面向 **Emacs 31.1** 的个人配置：原生 Emacs 按键 + Vertico/Orderless/Marginalia/Corfu +
+面向 **Emacs 31.1** 的个人配置：Evil（Vim 编辑）+ Emacs 按键 + Vertico/Orderless/Marginalia/Corfu +
 Org + [Denote](https://protesilaos.com/emacs/denote) 笔记。
 
 结构与启动优化参考了 [minimal-emacs.d](https://github.com/jamescherti/minimal-emacs.d)、
@@ -19,6 +19,7 @@ Org + [Denote](https://protesilaos.com/emacs/denote) 笔记。
 | `lisp/init-basic.el` | 运行期 GC 策略、`tau-first-input-hook`、默认设置、savehist/recentf/saveplace |
 | `lisp/init-ui.el` | 主题、字体（含中文和 emoji）、mode line、括号、滚动、终端 |
 | `lisp/init-keybindings.el` | 原生按键的增强与自定义按键、expreg |
+| `lisp/init-evil.el` | Evil、内置撤销/重做、Dired/ibuffer/help 的 Vim 按键 |
 | `lisp/init-completion.el` | Vertico、Orderless、Marginalia、Corfu |
 | `lisp/init-snippet.el` | Tempel、AAS（Org 中的 LaTeX 数学片段，用 `org-ratex-in-math-p` 判断是否在公式内） |
 | `lisp/init-dired.el` | Dired、Dired-X |
@@ -63,7 +64,8 @@ Emacs 31.1（原生编译、tree-sitter）在终端（`-nw`）中各启动 10 �
 | 新配置 | 142 ms | 189 |
 
 Org、Denote、package.el、Vertico、Corfu、Dired、tree-sitter 都不在启动时加载。
-以上数据测于移除 Evil 之前，当时 Evil 约占 35 ms、主题约 17 ms；现在不再加载 Evil。
+以上为历史数据：当时 Evil 约占 35 ms、主题约 17 ms；当前已启用 Evil 和
+evil-collection，启动耗时需重新测量。
 
 ## 用到的 Emacs 31 新特性
 
@@ -97,8 +99,29 @@ emacs                                   # 首次启动自动安装软件包
 
 ### 按键
 
-使用 Emacs 原生按键，`lisp/init-keybindings.el` 在此基础上做了少量增强。被改动的按键
-仍然做原来的事，只是更顺手；按下前缀后稍等，which-key 会列出后续按键。
+默认启用 Evil，编辑缓冲区以普通模式开始；Dired、ibuffer 和帮助缓冲区通过
+`evil-collection` 使用 Vim 风格按键。minibuffer 保持 Emacs/Vertico 按键。
+已有 Evil 的安装请先通过 `M-x list-packages` 升级 Evil；旧版 1.14.2 在
+Emacs 31 中存在兼容问题，本配置使用当前上游版本（1.15.0）验证。
+
+| 按键 | 命令 |
+| --- | --- |
+| `h` / `j` / `k` / `l` | 普通模式下左 / 下 / 上 / 右移动 |
+| `i` / `a` / `o` | 进入插入模式 / 在光标后插入 / 在下一行插入 |
+| `Esc` | 返回普通模式 |
+| `v` / `V` / `C-v` | 字符 / 行 / 块选区 |
+| `d` / `y` / `p` | 删除 / 复制 / 粘贴，可组合动作（如 `dw`、`yy`） |
+| `u` / `C-r` | 撤销 / 重做，使用 Emacs 内置 `undo-redo` |
+| `C-u` / `C-d` | 普通模式下向上 / 向下滚动半屏 |
+| `C-z` | 当前缓冲区切换 Evil 与 Emacs 状态 |
+| `C-c t e` | 全局开关 Evil（也可执行 `M-x evil-mode`） |
+
+`TAB` 保留给缩进和补全，不用作 Evil 的向前跳转；向后跳转仍使用 `C-o`。
+`C-x`、`C-c`、`M-x` 等 Emacs 命令入口仍可使用。
+
+下面是 `lisp/init-keybindings.el` 配置的 Emacs 按键。Evil 状态映射优先，部分按键
+（如 `C-a`、`C-w`）在 Evil 中有不同含义；使用 `C-z` 切换到 Emacs 状态可使用完整原生
+按键。按下前缀后稍等，which-key 会列出后续按键。
 
 **全局模式**（首次按键时启用）：`repeat-mode`（`C-x o o o`、`C-x u u`、`C-x { {`、
 `M-g n n` 等只需重复最后一个键）、`delete-selection-mode`（输入内容会替换选区）。
@@ -119,7 +142,7 @@ emacs                                   # 首次启动自动安装软件包
 | `C-x k` | 直接关闭当前缓冲区（`kill-current-buffer`，不再询问） |
 | `C-x C-b` | `ibuffer` |
 | `C-x C-r` | `recentf-open`：打开最近的文件 |
-| `C-z` | 取消绑定，避免误触最小化；需要时用 `C-x C-z` |
+| `C-z` | Evil 启用时切换 Evil/Emacs 状态；全局关闭 Evil 后取消绑定；最小化用 `C-x C-z` |
 
 | 按键 | 命令 |
 | --- | --- |
@@ -132,8 +155,9 @@ emacs                                   # 首次启动自动安装软件包
 | `C-c t t` | 截断长行 |
 | `C-c t s` | `whitespace-mode` |
 | `C-c t f` | 全屏 |
+| `C-c t e` | 全局开关 Evil |
 
-撤销 `C-/`（或 `C-x u`），重做 `C-?`（或 `C-M-_`，终端中使用后者）。
+Emacs 状态下撤销 `C-/`（或 `C-x u`），重做 `C-?`（或 `C-M-_`，终端中使用后者）。
 `C-=`、`C--`、`C-?` 在多数终端中无法输入，只在图形界面中可用。
 
 ### 笔记（Denote，`C-c n`）
@@ -163,7 +187,8 @@ emacs                                   # 首次启动自动安装软件包
 
 `C-\` 切换输入法，默认方案 `luna_pinyin_simp`，候选显示在光标旁的子窗口中
 （Emacs 31 的终端里也可以）。在代码、英文字母之后、大写字母、Org
-源码块和数学公式中自动输入英文。`M-i` 把光标前的拼音转换成汉字。
+源码块和数学公式中自动输入英文；Evil 的普通、移动和可视等状态也自动使用英文，
+插入和 Emacs 状态仍按上下文判断。`M-i` 把光标前的拼音转换成汉字。
 
 第一次按 `C-\` 时，如果找不到 liberime 模块，会询问是否下载
 [liberime](https://github.com/emacs-rime/liberime/releases) 的预编译版本
@@ -209,8 +234,9 @@ Rime 用户数据保存在 `rime/`，第一次启用时部署词库需要一些�
 - Corfu 自动补全改为 0.1 秒延迟、2 个字符触发（原为 0 秒、1 个字符），减少每次按键的开销。
 - tree-sitter 语法库改用 Emacs 31 自带的固定版本配方（仍走 gh-proxy 镜像），
   不再跟踪各仓库的最新提交；缺少语法库时询问是否安装，拒绝或失败时退回传统模式。
-- 不再使用 Evil，改用 Emacs 原生按键，另加了一些自定义按键（见上文“按键”）；
-  `rimel-predicate-evil-mode-p` 随之移除；行号改为绝对行号（配合 `M-g g`）。
+- Evil 默认启用，增加 Dired/ibuffer/help 的按键适配和全局开关（见上文“按键”），
+  并通过 `rimel-predicate-evil-mode-p` 在普通模式等状态下自动使用英文；
+  行号仍为绝对行号（配合 `M-g g`）。
 - `*scratch*` 使用 `fundamental-mode`；需要求值时用 `M-x lisp-interaction-mode`。
 - 不再手动开启 `xterm-mouse-mode`（Emacs 31 在兼容终端中默认开启）。
 - Org 笔记部分改用 Denote，自写的知识库命令（`tau-org.el`）、`tau-org-*` 选项以及
