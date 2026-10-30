@@ -182,9 +182,10 @@ example one built with `liberime-build'."
   :custom
   (rimel-schema "luna_pinyin_simp")
   (rimel-show-candidate 'posframe)
-  ;; Type English without toggling: in code, after Latin letters, for
-  ;; capitals, in source blocks and in math.
-  (rimel-disable-predicates '(rimel-predicate-prog-in-code-p
+  ;; Type English without toggling: outside Evil insert/Emacs states,
+  ;; in code, after Latin letters, for capitals, in source blocks and math.
+  (rimel-disable-predicates '(rimel-predicate-evil-mode-p
+                              rimel-predicate-prog-in-code-p
                               rimel-predicate-after-alphabet-char-p
                               rimel-predicate-current-uppercase-letter-p
                               rimel-predicate-org-in-src-block-p
