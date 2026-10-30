@@ -26,7 +26,7 @@ Org + [Denote](https://protesilaos.com/emacs/denote) 笔记。
 | `lisp/init-prog.el` | 行号、括号配对、tree-sitter、Eglot |
 | `lisp/init-latex.el` | AUCTeX |
 | `lisp/init-org.el` | Org、Denote |
-| `lisp/init-rime.el` | 中文输入：Rimel + 预编译的 liberime |
+| `lisp/init-rime.el` | 中文输入：[Tao-Boy/rimel](https://github.com/Tao-Boy/rimel)，通过 `:vc` 安装 |
 | `lisp/init-ai.el` | ECA（Editor Code Assistant） |
 | `site-lisp/org-ratex.el` | org-ratex：用 RaTeX 的 `render-svg` 预览 Org 中的公式；其 `org-ratex-in-math-p` 不受 `- ` 开头的行被解析为列表项影响 |
 | `custom.el` | Customize 保存的设置 |
@@ -89,7 +89,8 @@ git clone <this repo> ~/.config/emacs   # 或 ~/.emacs.d
 emacs                                   # 首次启动自动安装软件包
 ```
 
-首次启动会从 USTC 镜像安装软件包并生成 `package-quickstart.el`，之后的启动不再
+首次启动会从 USTC 镜像安装软件包，Rimel 通过 `:vc` 直接从
+`https://github.com/Tao-Boy/rimel.git` 安装，并生成 `package-quickstart.el`；之后的启动不再
 加载 package.el。手动安装或升级包后 quickstart 文件会自动刷新；如果出现异常，
 可以执行 `M-x package-quickstart-refresh`。
 
@@ -185,27 +186,40 @@ Emacs 状态下撤销 `C-/`（或 `C-x u`），重做 `C-?`（或 `C-M-_`，终�
 
 ### 中文输入（Rimel，`C-\`）
 
-`C-\` 切换输入法，默认方案 `luna_pinyin_simp`，候选显示在光标旁的子窗口中
-（Emacs 31 的终端里也可以）。在代码、英文字母之后、大写字母、Org
-源码块和数学公式中自动输入英文；Evil 的普通、移动和可视等状态也自动使用英文，
-插入和 Emacs 状态仍按上下文判断。`M-i` 把光标前的拼音转换成汉字。
+使用 [Tao-Boy/rimel](https://github.com/Tao-Boy/rimel)，由 `use-package :vc`
+跟踪仓库最新提交。此项目提供自己的 `rimel-module`，需要 C 编译器、`make`、
+`pkg-config`、librime 开发文件（≥ 1.8）及至少一套 Rime 方案数据。
+Debian/Ubuntu 可安装 `build-essential pkg-config librime-dev rime-data-luna-pinyin`；
+macOS 安装命令行开发工具、`pkg-config` 和 `librime`，方案数据安装方法见项目 README。
 
-第一次按 `C-\` 时，如果找不到 liberime 模块，会询问是否下载
-[liberime](https://github.com/emacs-rime/liberime/releases) 的预编译版本
-（`M-x tau-liberime-install` 也可以），解压到 `liberime/`，**不需要编译**：
+**从旧版迁移**：MELPA 的同名 `rimel` 与本项目接口不同。若已经安装旧包，先执行
+`M-x package-delete` 选择旧的 `rimel-<版本号>`，然后重启 Emacs，让 `:vc` 安装本项目；
+已有同名包时 `:vc` 会跳过安装。原来的 `rime/` 用户数据目录继续使用。
+本配置已移除 liberime 的预编译下载器；旧的 `M-i` 拼音转换绑定也已移除。
 
-- **Windows**：下载 `-with-deps` 包，自带 librime、依赖 DLL 和 Rime 输入方案，
-  不需要 MSYS2 或小狼毫。根据 Emacs 链接的 C 运行库自动选择 `ucrt-x86_64` 或
-  `x86_64` 版本（官方发布的 Emacs 两种都有），ARM 选 `clang-arm64`。
-  GCC 运行库 DLL 使用 Emacs 自带的那份。
-  Windows 不会在模块所在目录查找依赖 DLL，而 `setenv` 也改不了 Emacs 进程自身的
-  `PATH`，所以配置会先把 `bin/` 中的依赖 DLL 逐个载入，再加载 `liberime-core.dll`，
-  不需要修改系统环境变量。
-- **GNU/Linux、macOS**：下载对应平台的模块，需要系统中已安装 librime
-  （如 `apt install librime1 librime-data`、`brew install librime`）。
+`C-\` 切换输入法。首次激活时若模块尚未编译，会询问是否在后台编译，也可执行
+`M-x rimel-compile-module`。候选在图形界面下通过 posframe 显示，终端中自动退回
+minibuffer/echo area。在代码、英文字母或数字之后、大写字母、Org 源码块和数学公式中
+自动输入英文；Evil 普通、移动、可视和操作符状态也自动使用英文，插入和 Emacs 状态
+仍按上下文判断。需要临时输入中文时按 `C-c r f`。
 
-下载通过 `tau-github-mirror`（默认 gh-proxy.com）进行，设为 `nil` 则直连 GitHub。
-Rime 用户数据保存在 `rime/`，第一次启用时部署词库需要一些时间。
+| 按键 | 命令 |
+| --- | --- |
+| `C-c r s` | `rimel-select-schema`：选择方案，例如 `luna_pinyin_simp` |
+| `C-c r a` | `rimel-toggle-ascii-mode`：切换 Rime 西文模式 |
+| `C-c r f` | `rimel-force-rime`：下一次组字忽略自动英文判断 |
+| `C-c r d` | `rimel-deploy`：修改 Rime 配置后在后台部署 |
+
+Rime 配置和用户词库保存在 `rime/`。默认方案列表可在 `rime/default.custom.yaml` 中设置：
+
+```yaml
+patch:
+  schema_list:
+    - schema: luna_pinyin_simp
+```
+
+首次启用时部署词库需要一些时间。更多编译参数、Nix 支持和方案数据路径见
+[项目文档](https://github.com/Tao-Boy/rimel#安装)。
 
 ### AI 编程助手（ECA，`C-c e`）
 
@@ -235,7 +249,7 @@ Rime 用户数据保存在 `rime/`，第一次启用时部署词库需要一些�
 - tree-sitter 语法库改用 Emacs 31 自带的固定版本配方（仍走 gh-proxy 镜像），
   不再跟踪各仓库的最新提交；缺少语法库时询问是否安装，拒绝或失败时退回传统模式。
 - Evil 默认启用，增加 Dired/ibuffer/help 的按键适配和全局开关（见上文“按键”），
-  并通过 `rimel-predicate-evil-mode-p` 在普通模式等状态下自动使用英文；
+  并通过 `rimel-probe-evil-non-insert` 在普通模式等状态下自动使用英文；
   行号仍为绝对行号（配合 `M-g g`）。
 - `*scratch*` 使用 `fundamental-mode`；需要求值时用 `M-x lisp-interaction-mode`。
 - 不再手动开启 `xterm-mouse-mode`（Emacs 31 在兼容终端中默认开启）。
@@ -244,7 +258,7 @@ Rime 用户数据保存在 `rime/`，第一次启用时部署词库需要一些�
   旧笔记的文件名 `时间戳--标题.org` 已是 Denote 格式，可以直接使用；旧的
   `[[id:…]]` 链接仍可跳转（加载 Org 时会加载 org-id），但不计入 Denote 的反向链接，
   可以用 `denote-rename-file` 补上关键词、逐步改为 `denote:` 链接。
-- 新增：Rimel 中文输入、ECA；which-key、recentf、saveplace、auto-revert、so-long（均延迟启用），
+- 新增：Tao-Boy/rimel 中文输入（`:vc` 安装、自己的 C 模块）、ECA；which-key、recentf、saveplace、auto-revert、so-long（均延迟启用），
   中文标点/假名/注音字体与 emoji 字体，Dired 显示可读文件大小并目录优先（Linux），
   Eglot 默认关闭事件日志并在最后一个缓冲区关闭时停止服务器。
 - rainbow-delimiters 的颜色改用 `face-spec-set` 设置，不再写入 `custom.el`；
