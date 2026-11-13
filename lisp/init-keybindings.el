@@ -190,15 +190,5 @@ With prefix argument DIRECTORY, copy its directory instead."
     "C-c f" "file"
     "C-c t" "toggle"))
 
-;;;; Expand region
-
-;; `C-=' selects ever larger syntactic units (tree-sitter nodes when
-;; available), `C--' shrinks the selection again.  Negative arguments
-;; remain on `M--' and `C-M--'.
-(use-package expreg
-  :ensure t
-  :bind (("C-=" . expreg-expand)
-         ("C--" . expreg-contract)))
-
 (provide 'init-keybindings)
 ;;; init-keybindings.el ends here

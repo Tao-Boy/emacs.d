@@ -27,13 +27,12 @@ running %s, some features will be missing or broken." emacs-version)))
 (require 'init-basic)        ; Better defaults, GC policy, session state
 (require 'init-ui)           ; Theme, fonts, mode line, scrolling
 (require 'init-keybindings)  ; Native keys plus a few additions
-(require 'init-evil)         ; Vim editing, built-in undo/redo, special buffers
-(require 'init-completion)   ; Vertico, Orderless, Marginalia, Corfu
+(require 'init-completion)   ; Built-in Fido and Completion Preview
 (require 'init-snippet)      ; Tempel, AAS
 (require 'init-dired)        ; Dired, Dired-X
 (require 'init-prog)         ; Tree-sitter, Eglot, programming defaults
 (require 'init-latex)        ; AUCTeX
-(require 'init-org)          ; Org and Denote
+(require 'init-org)          ; Org, capture and agenda
 (require 'init-rime)         ; Chinese input: Tao-Boy/rimel
 (require 'init-ai)           ; ECA
 

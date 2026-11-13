@@ -8,11 +8,7 @@
 
 ;;;; Theme
 
-(use-package doom-themes
-  :ensure t
-  :demand t
-  :config
-  (load-theme 'doom-tokyo-night t))
+(load-theme 'modus-vivendi t)
 
 ;;;; Fonts
 
@@ -77,22 +73,6 @@ Return non-nil if the display is graphical."
 (setq show-paren-delay 0
       show-paren-context-when-offscreen 'overlay)
 
-(use-package rainbow-delimiters
-  :ensure t
-  :hook (prog-mode . rainbow-delimiters-mode)
-  :config
-  ;; Override specs take precedence over the theme and, unlike
-  ;; `custom-set-faces', are never written to `custom-file'.
-  ;; Depths 7-9 repeat the colors of depths 1-3.
-  (let ((colors ["#FFD700" "#DA70D6" "#179FFF" "#00E5A8" "#FF8C00" "#B56DFF"]))
-    (dotimes (i 9)
-      (face-spec-set (intern (format "rainbow-delimiters-depth-%d-face" (1+ i)))
-                     `((t :foreground ,(aref colors (% i (length colors)))))))
-    (face-spec-set 'rainbow-delimiters-unmatched-face
-                   '((t :foreground "#F44747" :weight bold)))
-    (face-spec-set 'rainbow-delimiters-mismatched-face
-                   '((t :foreground "#F44747" :weight bold :underline t)))))
-
 ;;;; Scrolling
 
 (setq scroll-margin 0
@@ -110,10 +90,7 @@ Return non-nil if the display is graphical."
 (unless (display-graphic-p)
   ;; The menu bar of the initial terminal frame is created before
   ;; early-init.el can disable it.
-  (menu-bar-mode -1)
-  ;; Emacs 31 draws child frames (Corfu popups) on TTYs; give them
-  ;; Unicode borders.
-  (add-hook 'tau-first-input-hook #'standard-display-unicode-special-glyphs))
+  (menu-bar-mode -1))
 
 (provide 'init-ui)
 ;;; init-ui.el ends here
