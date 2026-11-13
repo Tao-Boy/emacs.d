@@ -61,7 +61,7 @@ here instead of during startup.")
 
 (setq initial-scratch-message nil
       ;; `lisp-interaction-mode' would run `prog-mode-hook' (and load
-      ;; Completion Preview, line numbers, ...) for *scratch* during startup.
+      ;; Line numbers, electric pairs, ...) for *scratch* during startup.
       initial-major-mode 'fundamental-mode)
 
 ;;;; Performance

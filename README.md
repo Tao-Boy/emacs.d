@@ -1,7 +1,7 @@
 # emacs.d
 
 面向 **Emacs 31.1** 的个人配置，以 Emacs 原生按键和内置功能为主：
-Fido + Completion Preview 补全、Org 笔记、tree-sitter、Eglot、Modus Vivendi 主题。
+Fido + TAB 手动补全、Org 笔记、tree-sitter、Eglot、Modus Vivendi 主题。
 
 直接配置的第三方包从 16 个减到 **5 个**（不含这些包自身的依赖）：
 
@@ -18,7 +18,7 @@ Evil、evil-collection、Denote 已移除。通用功能改用以下内置方案
 | --- | --- |
 | doom-themes | Modus Vivendi |
 | Vertico、Orderless、Marginalia | Fido 纵向候选列表、flex 匹配和内置补全信息 |
-| Corfu | Completion Preview；`C-M-i` 调用 `completion-at-point` 查看候选 |
+| Corfu | `TAB` 缩进或调用内置 `completion-at-point`，候选使用 `*Completions*` |
 | rainbow-delimiters | `show-paren-mode` 高亮匹配括号 |
 | expreg | `C-M-SPC`（`mark-sexp`）、`M-h`、`C-x h` 等原生选区命令 |
 | posframe | Rimel 在回显区显示候选 |
@@ -39,7 +39,7 @@ Evil、evil-collection、Denote 已移除。通用功能改用以下内置方案
 | `lisp/init-basic.el` | GC、首次输入钩子、默认设置、会话记录、内置 which-key |
 | `lisp/init-ui.el` | 内置主题、字体、mode line、括号和滚动 |
 | `lisp/init-keybindings.el` | 原生按键增强、文件与模式开关前缀 |
-| `lisp/init-completion.el` | 内置 Fido、flex 和 Completion Preview |
+| `lisp/init-completion.el` | 内置 Fido、flex 和 TAB 缩进 / 补全 |
 | `lisp/init-snippet.el` | Tempel、AAS 的 Org 数学片段 |
 | `lisp/init-dired.el` | 内置 Dired、Dired-X |
 | `lisp/init-prog.el` | 行号、括号配对、tree-sitter、Eglot |
@@ -102,9 +102,13 @@ rainbow-delimiters、expreg、posframe。其他自定义配置仍在使用的包
 - **minibuffer**：Fido 纵向显示候选，使用 flex 按字符顺序模糊匹配，
   不再使用 Orderless 的无序多词匹配。`C-n` / `C-p` 选择候选，`RET` 确认；
   `M-j` 提交原样输入，例如创建文件。文件名保留 partial-completion 匹配。
-- **代码补全**：输入两个字符、停顿 0.1 秒后显示 Completion Preview 内联建议。
-  有建议时 `TAB` 接受，`M-n` / `M-p` 切换；`RET` 保留主模式行为。
-  `C-M-i` 手动调用 `completion-at-point`，后端继续使用主模式和 Eglot。
+- **代码补全**：关闭 Completion Preview，不自动显示内联建议。
+  `TAB` 先缩进；当前行已正确缩进时，再调用内置 `completion-at-point`。
+  补全时有多个候选就显示 `*Completions*`，用 `C-x o` 切换到候选窗口，
+  `RET` 插入候选。后端继续使用主模式和 Eglot，`C-M-i` 保留原生绑定。
+  `*Completions*` 是独立候选窗口；Fido 仍只用于 minibuffer，不加入自定义连接函数。
+  主模式或模板有专用 `TAB` 行为时，以它们的绑定为准，例如 Org 的折叠和 Tempel 的字段切换。
+  更新配置后重启 Emacs，让已有缓冲区中的 Preview 模式退出。
 
 ### 笔记与任务（内置 Org）
 
