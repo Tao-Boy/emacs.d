@@ -83,10 +83,10 @@
       tool-bar-mode nil
       scroll-bar-mode nil)
 
-;; Paint the first frame with the theme's colors (doom-tokyo-night) so
+;; Paint the first frame with the built-in theme's colors (modus-vivendi) so
 ;; there is no white flash before `init-ui' loads the theme.
-(push '(background-color . "#1a1b26") default-frame-alist)
-(push '(foreground-color . "#a9b1d6") default-frame-alist)
+(push '(background-color . "#000000") default-frame-alist)
+(push '(foreground-color . "#ffffff") default-frame-alist)
 
 (setq frame-inhibit-implied-resize t      ; Don't resize frames on font changes.
       frame-resize-pixelwise t

@@ -1,60 +1,39 @@
-;;; init-completion.el --- Minibuffer and in-buffer completion -*- lexical-binding: t; -*-
+;;; init-completion.el --- Built-in completion -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 
-;; Vertico + Orderless + Marginalia in the minibuffer, Corfu in
-;; buffers.  The minibuffer UI is enabled right before the first
-;; command instead of during startup.
+;; Fido provides a vertical minibuffer with flex matching.  Completion
+;; Preview shows in-buffer suggestions from the usual completion-at-point
+;; backends, including Eglot.  Both are part of Emacs.
 
 ;;; Code:
 
 (setq completion-ignore-case t
       read-file-name-completion-ignore-case t
       read-buffer-completion-ignore-case t
-      ;; Emacs 30: don't offer dictionary words in `text-mode' buffers.
+      completion-styles '(flex basic)
+      completion-category-overrides '((file (styles partial-completion)))
+      completion-pcm-leading-wildcard t     ; Emacs 31: substring file matching.
       text-mode-ispell-word-completion nil)
 
 ;;;; Minibuffer
 
-(use-package vertico
-  :ensure t
-  :hook (tau-first-input . vertico-mode)
+(use-package icomplete
+  :hook (tau-first-input . fido-vertical-mode)
   :custom
-  (vertico-cycle t)
-  (vertico-count 8))
-
-;; The `orderless' style is registered by the package autoloads, so
-;; the library itself loads on the first completion.
-(use-package orderless
-  :ensure t
-  :defer t
-  :custom
-  (completion-styles '(orderless basic))
-  (completion-category-defaults nil)
-  (completion-category-overrides '((file (styles partial-completion))))
-  ;; Emacs 31: let `partial-completion' match substrings as well.
-  (completion-pcm-leading-wildcard t))
-
-(use-package marginalia
-  :ensure t
-  :hook (tau-first-input . marginalia-mode))
+  (icomplete-compute-delay 0)
+  (icomplete-prospects-height 8))
 
 ;;;; In-buffer completion
 
-;; On Emacs 31 Corfu also pops up in terminals, using TTY child frames.
-(use-package corfu
-  :ensure t
-  :hook (prog-mode . corfu-mode)
+(use-package completion-preview
+  :hook (prog-mode . completion-preview-mode)
   :custom
-  (corfu-auto t)
-  ;; A small delay and a two-character prefix avoid running every
-  ;; completion backend on each keystroke.
-  (corfu-auto-delay 0.1)
-  (corfu-auto-prefix 2)
-  (corfu-quit-no-match 'separator)
-  :bind (:map corfu-map
-              ("TAB" . nil)            ; Keep TAB for indentation.
-              ("RET" . corfu-insert)))
+  (completion-preview-minimum-symbol-length 2)
+  (completion-preview-idle-delay 0.1)
+  :bind (:map completion-preview-active-mode-map
+              ("M-n" . completion-preview-next-candidate)
+              ("M-p" . completion-preview-prev-candidate)))
 
 (provide 'init-completion)
 ;;; init-completion.el ends here

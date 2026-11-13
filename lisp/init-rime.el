@@ -9,10 +9,6 @@
 
 ;;; Code:
 
-(use-package posframe
-  :ensure t
-  :defer t)
-
 (use-package rimel
   :vc (:url "https://github.com/Tao-Boy/rimel.git" :rev :newest)
   :defer t
@@ -23,12 +19,11 @@
   :init
   (setq default-input-method "rimel")
   :custom
-  ;; The library falls back to the minibuffer on terminals.
-  (rimel-candidate-style 'posframe)
-  ;; Keep English in Evil command states, code, after Latin letters or
-  ;; digits, for capitals, in Org source blocks and in math.
-  (rimel-probes '(rimel-probe-evil-non-insert
-                  rimel-probe-program
+  ;; Use the built-in echo area on both graphical displays and terminals.
+  (rimel-candidate-style 'minibuffer)
+  ;; Keep English in code, after Latin letters or digits, for capitals,
+  ;; in Org source blocks and in math.
+  (rimel-probes '(rimel-probe-program
                   rimel-probe-after-alphanumeric
                   rimel-probe-uppercase
                   rimel-probe-org
