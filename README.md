@@ -1,24 +1,26 @@
 # emacs.d
 
-面向 **Emacs 31.1** 的个人配置，以 Emacs 原生按键和内置功能为主：
-Fido + TAB 手动补全、Org 笔记、tree-sitter、Eglot、Modus Vivendi 主题。
+面向 **Emacs 31.1** 的个人配置，以 Emacs 原生按键为主：
+Vertico + Orderless + Consult 补全、Org 笔记、tree-sitter、Eglot、Modus Vivendi 主题。
 
-直接配置的第三方包从 16 个减到 **5 个**（不含这些包自身的依赖）：
+直接配置的第三方包共 **8 个**（不含这些包自身的依赖）：
 
 | 保留的包 | 用途 |
 | --- | --- |
+| Vertico | minibuffer 纵向候选列表 |
+| Orderless | 无序多关键词匹配 |
+| Consult | 导航、搜索，以及将代码补全接入 minibuffer |
 | [Rimel](https://github.com/Tao-Boy/rimel) | 中文输入，通过 `:vc` 安装 |
 | ECA | AI 编程助手 |
 | Tempel、AAS | Org 中自动展开的 LaTeX 数学片段 |
 | AUCTeX | LaTeX 编辑 |
 
-Evil、evil-collection、Denote 已移除。通用功能改用以下内置方案：
+Evil、evil-collection、Denote 已移除。补全采用上述三件套，其他通用功能使用以下方案：
 
 | 原插件 | 当前方案 |
 | --- | --- |
 | doom-themes | Modus Vivendi |
-| Vertico、Orderless、Marginalia | Fido 纵向候选列表、flex 匹配和内置补全信息 |
-| Corfu | `TAB` 缩进或调用内置 `completion-at-point`，候选使用 `*Completions*` |
+| Corfu | `TAB` 缩进或补全，通过 Consult 在 Vertico 的 minibuffer 中选择候选 |
 | rainbow-delimiters | `show-paren-mode` 高亮匹配括号 |
 | expreg | `C-M-SPC`（`mark-sexp`）、`M-h`、`C-x h` 等原生选区命令 |
 | posframe | Rimel 在回显区显示候选 |
@@ -39,7 +41,7 @@ Evil、evil-collection、Denote 已移除。通用功能改用以下内置方案
 | `lisp/init-basic.el` | GC、首次输入钩子、默认设置、会话记录、内置 which-key |
 | `lisp/init-ui.el` | 内置主题、字体、mode line、括号和滚动 |
 | `lisp/init-keybindings.el` | 原生按键增强、文件与模式开关前缀 |
-| `lisp/init-completion.el` | 内置 Fido、flex 和 TAB 缩进 / 补全 |
+| `lisp/init-completion.el` | Vertico、Orderless、Consult 和 TAB 缩进 / 补全 |
 | `lisp/init-snippet.el` | Tempel、AAS 的 Org 数学片段 |
 | `lisp/init-dired.el` | 内置 Dired、Dired-X |
 | `lisp/init-prog.el` | 行号、括号配对、tree-sitter、Eglot |
@@ -62,7 +64,7 @@ emacs
 
 更新旧配置后重启 Emacs，恢复原生编辑按键。配置不再安装或启用已移除的插件；
 已安装的包不会被自动删除。需要清理磁盘时，可在 `M-x list-packages` 中手动卸载
-Evil、evil-collection、Denote、doom-themes、Vertico、Orderless、Marginalia、Corfu、
+Evil、evil-collection、Denote、doom-themes、Marginalia、Corfu、
 rainbow-delimiters、expreg、posframe。其他自定义配置仍在使用的包应保留。
 卸载后执行 `M-x package-quickstart-refresh`，再重启 Emacs。
 
@@ -89,7 +91,11 @@ rainbow-delimiters、expreg、posframe。其他自定义配置仍在使用的包
 | `M-o` | 切换窗口 |
 | `C-x 2` / `C-x 3` | 分割窗口并切换到新窗口 |
 | `C-x k` / `C-x C-b` | 关闭当前缓冲区 / ibuffer |
-| `C-x C-r` 或 `C-c f r` | 最近文件 |
+| `C-x b` | `consult-buffer`：缓冲区、最近文件等 |
+| `C-x C-r` 或 `C-c f r` | `consult-recent-file`：最近文件 |
+| `M-y` | `consult-yank-pop`：选择 kill ring 内容 |
+| `M-g g` / `M-g l` | `consult-goto-line` / `consult-line`：跳转行号 / 搜索当前缓冲区 |
+| `C-c s` | `consult-ripgrep`：搜索目录，需要安装 `rg` |
 | `C-c f R` | 重命名当前文件 |
 | `C-c f y` | 复制当前文件路径；`C-u` 复制目录，Dired 中复制当前目录 |
 | `C-c f s` | 通过 TRAMP 以 root 编辑当前文件；`C-u` 选择文件 |
@@ -99,14 +105,14 @@ rainbow-delimiters、expreg、posframe。其他自定义配置仍在使用的包
 `C-z` 取消绑定，挂起或最小化仍用 `C-x C-z`。`C-c t e` 和 `C-c n` 不再绑定。
 `C-=`、`C--` 不再用于扩大或缩小选区；负数参数恢复原生 `C--`，也可用 `M--`。
 
-- **minibuffer**：Fido 纵向显示候选，使用 flex 按字符顺序模糊匹配，
-  不再使用 Orderless 的无序多词匹配。`C-n` / `C-p` 选择候选，`RET` 确认；
-  `M-j` 提交原样输入，例如创建文件。文件名保留 partial-completion 匹配。
+- **minibuffer**：Vertico 纵向显示候选，Orderless 按空格分隔关键词，匹配顺序不限，
+  例如 `org init` 可以匹配 `init-org`。`C-n` / `C-p` 选择候选，`RET` 确认；
+  `M-RET` 提交原样输入，例如创建文件。文件名保留 partial-completion 匹配。
 - **代码补全**：关闭 Completion Preview，不自动显示内联建议。
   `TAB` 先缩进；当前行已正确缩进时，再调用内置 `completion-at-point`。
-  补全时有多个候选就显示 `*Completions*`，用 `C-x o` 切换到候选窗口，
-  `RET` 插入候选。后端继续使用主模式和 Eglot，`C-M-i` 保留原生绑定。
-  `*Completions*` 是独立候选窗口；Fido 仍只用于 minibuffer，不加入自定义连接函数。
+  Consult 自带的 `consult-completion-in-region` 将候选送入 Vertico minibuffer，
+  `C-n` / `C-p` 选择、`RET` 插入，`C-g` 取消。后端继续使用主模式和 Eglot，
+  `C-M-i` 保留原生绑定；无需手写连接函数。
   主模式或模板有专用 `TAB` 行为时，以它们的绑定为准，例如 Org 的折叠和 Tempel 的字段切换。
   更新配置后重启 Emacs，让已有缓冲区中的 Preview 模式退出。
 
@@ -177,7 +183,7 @@ MELPA 的同名包接口不同；如果已安装，应先用 `M-x package-delete
 - 启动期跳过文件名处理器，在 `after-init-hook` 中恢复，保留命令行 `.gz`、TRAMP 支持。
 - Emacs 31 的 `load-path-filter-function` 缓存库目录，先加载 `regexp-opt` 防止递归。
 - package quickstart 预先生成 autoloads；已安装包通过 `:ensure` 快速路径跳过 package.el。
-- Org、Dired、AUCTeX、Eglot、Rimel、ECA 延迟加载；Fido、which-key、会话记录等在首次按键前启用。
+- Org、Dired、AUCTeX、Eglot、Rimel、ECA、Consult 延迟加载；Vertico、which-key、会话记录等在首次按键前启用。
 - `*scratch*` 使用 `fundamental-mode`，需要求值可切换到 `lisp-interaction-mode`。
 - 首帧直接使用主题底色，避免闪白；安装包时进行原生编译。
 - tree-sitter 使用 Emacs 31 自带的固定版本配方，缺少语法库时询问安装，失败时退回传统模式。
