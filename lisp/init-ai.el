@@ -29,7 +29,17 @@
   (eca-chat-window-side 'right)
   ;; `url-retrieve' downloads the server asynchronously; curl can block
   ;; Emacs on some builds.
-  (eca-server-download-method 'url-retrieve))
+  (eca-server-download-method 'url-retrieve)
+  :config
+  ;; Rewrite only the HTTP request, keeping the canonical asset URL for
+  ;; ECA's release digest lookup and checksum verification.
+  (dolist (download '(eca--url-retrieve-download-file eca--curl-download-file))
+    (advice-add download :filter-args
+                (lambda (args)
+                  (let ((url (plist-get args :url)))
+                    (if (string-prefix-p "https://github.com/" url)
+                        (plist-put args :url (concat "https://gh-proxy.org/" url))
+                      args))))))
 
 (with-eval-after-load 'which-key
   (which-key-add-key-based-replacements "C-c e" "eca"))

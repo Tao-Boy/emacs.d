@@ -1,157 +1,57 @@
-;;; init-snippet.el --- Templates and auto-expanding snippets -*- lexical-binding: t; -*-
-
-;;; Commentary:
-
-;; Tempel templates, plus AAS snippets that expand LaTeX math as you
-;; type in Org buffers.  Both load with the first Org buffer.
+;;; init-snippet.el --- CDLaTeX math input -*- lexical-binding: t; -*-
 
 ;;; Code:
 
-(use-package tempel
+(use-package cdlatex
   :ensure t
-  :defer t
-  :bind (:map tempel-map
-              ("TAB" . tempel-next)
-              ("<tab>" . tempel-next)
-              ("<backtab>" . tempel-previous)
-              ("S-TAB" . tempel-previous)))
-
-(declare-function org-inside-LaTeX-fragment-p "org")
-(declare-function org-ratex-in-math-p "org-ratex")
-
-(defun tau-org-in-math-p ()
-  "Non-nil if point is inside LaTeX math in an Org buffer.
-Uses `org-ratex-in-math-p' when org-ratex is available: Org's own
-`org-inside-LaTeX-fragment-p' fails in a whole \\[...\\] once one of its
-lines starts with \"- \", \"+ \" or \"1. \", which Org reads as a list item."
-  (if (fboundp 'org-ratex-in-math-p)
-      (org-ratex-in-math-p)
-    (org-inside-LaTeX-fragment-p)))
-
-(use-package aas
-  :ensure t
-  :hook (org-mode . aas-activate-for-major-mode)
-  :config
-  (require 'org-ratex nil t)
-  (aas-set-snippets 'org-mode
-    :cond (lambda () (not (tau-org-in-math-p)))
-    "mk" '(tempel "\\(" p "\\)" q)
-    "dm" '(tempel
-           "\\[" n>
-           p
-           n "\\]" q)
-
-    :cond #'tau-org-in-math-p
-    ";a" "\\alpha"
-    ";b" "\\beta"
-    ";g" "\\gamma"
-    ";d" "\\delta"
-    ";e" "\\epsilon"
-    ":e" "\\varepsilon"
-    ";z" "\\zeta"
-    ";h" "\\eta"
-    ";t" "\\theta"
-    ";i" "\\iota"
-    ";k" "\\kappa"
-    ";l" "\\lambda"
-    ";m" "\\mu"
-    ";n" "\\nu"
-    ";x" "\\xi"
-    ";p" "\\pi"
-    ";r" "\\rho"
-    ";s" "\\sigma"
-    ";u" "\\tau"
-    ";f" "\\phi"
-    ":f" "\\varphi"
-    ";c" "\\chi"
-    ";y" "\\psi"
-    ";o" "\\omega"
-
-    ";G" "\\Gamma"
-    ";D" "\\Delta"
-    ";T" "\\Theta"
-    ";L" "\\Lambda"
-    ";X" "\\Xi"
-    ";P" "\\Pi"
-    ";S" "\\Sigma"
-    ";F" "\\Phi"
-    ";Y" "\\Psi"
-    ";O" "\\Omega"
-
-    ;; "->" "\\to"
-    ;; "<-" "\\leftarrow"
-    ;; "=>" "\\implies"
-    ;; "=<" "\\impliedby"
-    ;; "<=>" "\\iff"
-
-    "<=" "\\leq"
-    ">=" "\\geq"
-    "!=" "\\neq"
-    "~=" "\\approx"
-    "+-" "\\pm"
-    "-+" "\\mp"
-    "xx" "\\times"
-    "**" "\\cdot"
-
-    "inn" "\\in"
-    "nin" "\\notin"
-
-    "AA" "\\forall"
-    "EE" "\\exists"
-
-    "oo" "\\infty"
-    "pd" "\\partial"
-    "nbl" "\\nabla"
-
-    "sin" "\\sin"
-    "cos" "\\cos"
-    "tan" "\\tan"
-    "log" "\\log"
-    "ln" "\\ln"
-    "exp" "\\exp"
-
-    "ff" '(tempel
-           "\\frac{" p "}{" p "}" q)
-    "sq" '(tempel
-           "\\sqrt{" p "}" q)
-
-    "sr" "^{2}"
-    "cb" "^{3}"
-
-    "sum" '(tempel
-            "\\sum_{" (p "i=1") "}^{"
-            (p "n") "} " q)
-
-    "prod" '(tempel
-             "\\prod_{" (p "i=1") "}^{"
-             (p "n") "} " q)
-
-    "int" '(tempel
-            "\\int_{" (p "a") "}^{"
-            (p "b") "} "
-            p
-            "\\, d" (p "x") q)
-
-    "lim" '(tempel
-            "\\lim_{"
-            (p "n") " \\to "
-            (p "\\infty")
-            "} " q)
-
-    "lr(" '(tempel
-            "\\left(" p "\\right)" q)
-
-    "lr[" '(tempel
-            "\\left[" p "\\right]" q)
-
-    "lr{" '(tempel
-            "\\left\\{" p "\\right\\}" q)
-
-    "lr|" '(tempel
-            "\\left|" p "\\right|" q)
-
-    "jk" '(tempel "_{" p "}" q)
-    "kj" '(tempel "^{" p "}" q)))
+  :hook ((org-mode . turn-on-org-cdlatex)
+         ((latex-mode LaTeX-mode) . turn-on-cdlatex))
+  :bind (:map cdlatex-mode-map
+              ("C-c TAB" . cdlatex-tab))
+  :custom
+  (cdlatex-math-symbol-prefix ?\;)
+  (cdlatex-simplify-sub-super-scripts nil)
+  ;; Keep the previous Greek-letter keys and common operator mnemonics.
+  (cdlatex-math-symbol-alist
+   '((?i ("\\iota" "\\imath"))
+     (?t ("\\theta" "\\vartheta" "\\tan"))
+     (?T ("\\Theta" "" "\\arctan"))
+     (?u ("\\tau"))
+     (?x ("\\xi"))
+     (?X ("\\Xi"))
+     (?c ("\\chi" "" "\\cos"))
+     (?< ("\\leq" "\\leftarrow"))
+     (?> ("\\geq" "\\rightarrow"))
+     (?! ("\\neq" "\\neg"))
+     (?+ ("\\pm" "\\cup"))
+     (?- ("\\mp" "\\leftrightarrow"))))
+  ;; Keywords expand with TAB.  A question mark marks the initial cursor.
+  (cdlatex-command-alist
+   '(("mk" "Inline math" "\\(?\\)" cdlatex-position-cursor nil t nil)
+     ("dm" "Display math" "\\[\n?\n\\]" cdlatex-position-cursor nil t nil)
+     ("ff" "Fraction" "\\frac{?}{}" cdlatex-position-cursor nil nil t)
+     ("sr" "Square" "^{2}" nil nil nil t)
+     ("cb" "Cube" "^{3}" nil nil nil t)
+     ("sum" "Sum" "\\sum_{?}^{n} " cdlatex-position-cursor nil nil t)
+     ("prod" "Product" "\\prod_{?}^{n} " cdlatex-position-cursor nil nil t)
+     ("int" "Integral" "\\int_{?}^{b} \\, dx" cdlatex-position-cursor nil nil t)
+     ("lim" "Limit" "\\lim_{? \\to \\infty} " cdlatex-position-cursor nil nil t)
+     ("jk" "Subscript" "_{?}" cdlatex-position-cursor nil nil t)
+     ("kj" "Superscript" "^{?}" cdlatex-position-cursor nil nil t)
+     ("xx" "Times" "\\times" nil nil nil t)
+     ("inn" "In" "\\in" nil nil nil t)
+     ("nin" "Not in" "\\notin" nil nil nil t)
+     ("AA" "For all" "\\forall" nil nil nil t)
+     ("EE" "Exists" "\\exists" nil nil nil t)
+     ("oo" "Infinity" "\\infty" nil nil nil t)
+     ("pd" "Partial" "\\partial" nil nil nil t)
+     ("nbl" "Nabla" "\\nabla" nil nil nil t)
+     ("sin" "Sine" "\\sin" nil nil nil t)
+     ("cos" "Cosine" "\\cos" nil nil nil t)
+     ("tan" "Tangent" "\\tan" nil nil nil t)
+     ("log" "Logarithm" "\\log" nil nil nil t)
+     ("ln" "Natural logarithm" "\\ln" nil nil nil t)
+     ("exp" "Exponential" "\\exp" nil nil nil t))))
 
 (provide 'init-snippet)
 ;;; init-snippet.el ends here
