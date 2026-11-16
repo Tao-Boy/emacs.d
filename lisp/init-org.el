@@ -10,20 +10,17 @@
 
 ;;;; Org
 
-(declare-function org-indent-mode "org-indent")
-
-(defun tau-org-mode-setup ()
-  "Configure an Org buffer for technical note taking."
-  (visual-line-mode 1)
-  (org-indent-mode 1)
-  (setq-local fill-column 88))
-
 (use-package org
   :defer t
   :bind (("C-c l" . org-store-link)
          ("C-c c" . org-capture)
-         ("C-c a" . org-agenda))
-  :hook (org-mode . tau-org-mode-setup)
+         ("C-c a" . org-agenda)
+         :map org-cdlatex-mode-map
+         ("C-c TAB" . cdlatex-tab)
+         (";" . cdlatex-math-symbol)
+         ("`" . nil))
+  :hook ((org-mode . visual-line-mode)
+         (org-mode . org-indent-mode))
   :custom
   (org-directory "~/org/")
   ;; Relative file names below are resolved against `org-directory'.

@@ -1,193 +1,133 @@
 # emacs.d
 
-面向 **Emacs 31.1** 的个人配置，以 Emacs 原生按键为主：
-Vertico + Orderless + Consult 补全、Org 笔记、tree-sitter、Eglot、Modus Vivendi 主题。
+面向 **Emacs 31.1** 的个人配置，使用 `use-package` 管理：
 
-直接配置的第三方包共 **8 个**（不含这些包自身的依赖）：
+- Evil + evil-collection：Vim 编辑，适配 Dired、ibuffer 和帮助窗口。
+- Vertico + Orderless + Consult：minibuffer 补全、搜索和代码补全。
+- Org + CDLaTeX + AUCTeX：笔记、任务和数学输入。
+- 上游 [liberime](https://github.com/emacs-rime/liberime) +
+  [Rimel](https://github.com/emacs-rime/rimel)：中文输入。
+- ECA：AI 编程助手，GitHub 服务端下载使用 `https://gh-proxy.org/` 前缀。
 
-| 保留的包 | 用途 |
-| --- | --- |
-| Vertico | minibuffer 纵向候选列表 |
-| Orderless | 无序多关键词匹配 |
-| Consult | 导航、搜索，以及将代码补全接入 minibuffer |
-| [Rimel](https://github.com/Tao-Boy/rimel) | 中文输入，通过 `:vc` 安装 |
-| ECA | AI 编程助手 |
-| Tempel、AAS | Org 中自动展开的 LaTeX 数学片段 |
-| AUCTeX | LaTeX 编辑 |
-
-Evil、evil-collection、Denote 已移除。补全采用上述三件套，其他通用功能使用以下方案：
-
-| 原插件 | 当前方案 |
-| --- | --- |
-| doom-themes | Modus Vivendi |
-| Corfu | `TAB` 缩进或补全，通过 Consult 在 Vertico 的 minibuffer 中选择候选 |
-| rainbow-delimiters | `show-paren-mode` 高亮匹配括号 |
-| expreg | `C-M-SPC`（`mark-sexp`）、`M-h`、`C-x h` 等原生选区命令 |
-| posframe | Rimel 在回显区显示候选 |
-
-结构与启动优化参考了 [minimal-emacs.d](https://github.com/jamescherti/minimal-emacs.d)、
-[Doom Emacs](https://github.com/doomemacs/doomemacs)、
-[Centaur Emacs](https://github.com/seagle0128/.emacs.d) 和
-[Purcell 的 emacs.d](https://github.com/purcell/emacs.d)。
-
-## 目录结构
-
-| 文件 | 内容 |
-| --- | --- |
-| `early-init.el` | GC、启动期 I/O 优化、package quickstart、原生编译、frame 参数 |
-| `init.el` | 版本检查、按顺序加载模块、加载 `custom.el` |
-| `lisp/init-const.el` | 平台常量 |
-| `lisp/init-package.el` | 软件源、镜像、内置 `use-package`、`:ensure` 快速路径 |
-| `lisp/init-basic.el` | GC、首次输入钩子、默认设置、会话记录、内置 which-key |
-| `lisp/init-ui.el` | 内置主题、字体、mode line、括号和滚动 |
-| `lisp/init-keybindings.el` | 原生按键增强、文件与模式开关前缀 |
-| `lisp/init-completion.el` | Vertico、Orderless、Consult 和 TAB 缩进 / 补全 |
-| `lisp/init-snippet.el` | Tempel、AAS 的 Org 数学片段 |
-| `lisp/init-dired.el` | 内置 Dired、Dired-X |
-| `lisp/init-prog.el` | 行号、括号配对、tree-sitter、Eglot |
-| `lisp/init-latex.el` | AUCTeX |
-| `lisp/init-org.el` | 内置 Org、capture、agenda、Org ID |
-| `lisp/init-rime.el` | Rimel 输入法和上下文判断 |
-| `lisp/init-ai.el` | ECA |
-| `site-lisp/org-ratex.el` | 本地公式预览扩展及数学环境判断，供数学片段使用 |
-| `custom.el` | Customize 保存的设置 |
-
-## 使用与迁移
+## 安装与迁移
 
 ```sh
-git clone https://github.com/Tao-Boy/emacs.d.git ~/.config/emacs  # 或 ~/.emacs.d
+git clone https://github.com/Tao-Boy/emacs.d.git ~/.config/emacs
 emacs
 ```
 
-首次启动从 USTC 镜像安装缺少的 ELPA 包；Rimel 通过 `:vc` 从 GitHub 安装。
-`tau-elpa-mirror` 和 `tau-github-mirror` 分别控制 ELPA 与 tree-sitter 下载镜像。
+缺少的包通过 USTC ELPA 镜像安装。`tau-elpa-mirror` 控制软件源，
+`tau-github-mirror` 控制 tree-sitter 下载镜像。
 
-更新旧配置后重启 Emacs，恢复原生编辑按键。配置不再安装或启用已移除的插件；
-已安装的包不会被自动删除。需要清理磁盘时，可在 `M-x list-packages` 中手动卸载
-Evil、evil-collection、Denote、doom-themes、Marginalia、Corfu、
-rainbow-delimiters、expreg、posframe。其他自定义配置仍在使用的包应保留。
-卸载后执行 `M-x package-quickstart-refresh`，再重启 Emacs。
+**从旧配置迁移时，先卸载通过 `:vc` 安装的 `Tao-Boy/rimel`，再重启 Emacs。**
+两种实现的包名都是 `rimel`，`:ensure t` 不会替换已经安装的同名包。
+在 `M-x list-packages` 中删除旧包，或执行 `M-x package-delete RET rimel RET`；
+然后执行 `M-x package-quickstart-refresh` 并重启，新配置会安装 MELPA 的上游 Rimel。
+原有 `rime/` 目录继续使用，词库和方案不删除。
 
-原有笔记文件不改名、不删除。旧的 `[[denote:标识符]]` 链接需要改为标准
-`[[file:相对路径.org][标题]]` 或 `[[id:UUID][标题]]` 链接；移除 Denote 后不再提供
-其专用链接解析、反向链接和重命名功能。已有 Org ID 链接仍由内置 `org-id` 处理。
+Tempel、AAS 和 org-ratex 已从配置中移除，本地 `site-lisp/org-ratex.el` 也已删除。
+已安装的 Tempel、AAS 可以手动卸载；其他配置仍使用它们时保留。
 
-### 按键与补全
+## 按键
 
-按下前缀后稍等，内置 which-key 会显示后续按键。首次按键前启用
-`repeat-mode` 和 `delete-selection-mode`，分别提供重复命令和输入替换选区。
-
-| 按键 | 命令 |
-| --- | --- |
-| `C-a` | 先到缩进处，再到行首；Org 保持自己的行为 |
-| `C-w` / `M-w` | 剪切 / 复制选区；无选区时作用于当前行 |
-| `M-<up>` / `M-<down>` | 移动当前行或选区所在行；Org 保持自己的行为 |
-| `C-c d` | `duplicate-dwim`：复制当前行或选区 |
-| `C-M-SPC` | `mark-sexp`：选择表达式，重复执行扩大选区 |
-| `M-h` / `C-x h` | 选择段落 / 整个缓冲区 |
-| `M-z` / `M-/` | `zap-up-to-char` / `hippie-expand` |
-| `C-/` / `C-M-_` | 内置撤销 / 重做 |
-| `C-g` | 退出命令，也可关闭补全窗口、从其他窗口退出 minibuffer |
-| `M-o` | 切换窗口 |
-| `C-x 2` / `C-x 3` | 分割窗口并切换到新窗口 |
-| `C-x k` / `C-x C-b` | 关闭当前缓冲区 / ibuffer |
-| `C-x b` | `consult-buffer`：缓冲区、最近文件等 |
-| `C-x C-r` 或 `C-c f r` | `consult-recent-file`：最近文件 |
-| `M-y` | `consult-yank-pop`：选择 kill ring 内容 |
-| `M-g g` / `M-g l` | `consult-goto-line` / `consult-line`：跳转行号 / 搜索当前缓冲区 |
-| `C-c s` | `consult-ripgrep`：搜索目录，需要安装 `rg` |
-| `C-c f R` | 重命名当前文件 |
-| `C-c f y` | 复制当前文件路径；`C-u` 复制目录，Dired 中复制当前目录 |
-| `C-c f s` | 通过 TRAMP 以 root 编辑当前文件；`C-u` 选择文件 |
-| `C-c t l` / `C-c t w` | 行号 / 软换行 |
-| `C-c t t` / `C-c t s` / `C-c t f` | 截断长行 / whitespace / 全屏 |
-
-`C-z` 取消绑定，挂起或最小化仍用 `C-x C-z`。`C-c t e` 和 `C-c n` 不再绑定。
-`C-=`、`C--` 不再用于扩大或缩小选区；负数参数恢复原生 `C--`，也可用 `M--`。
-
-- **minibuffer**：Vertico 纵向显示候选，Orderless 按空格分隔关键词，匹配顺序不限，
-  例如 `org init` 可以匹配 `init-org`。`C-n` / `C-p` 选择候选，`RET` 确认；
-  `M-RET` 提交原样输入，例如创建文件。文件名保留 partial-completion 匹配。
-- **代码补全**：关闭 Completion Preview，不自动显示内联建议。
-  `TAB` 先缩进；当前行已正确缩进时，再调用内置 `completion-at-point`。
-  Consult 自带的 `consult-completion-in-region` 将候选送入 Vertico minibuffer，
-  `C-n` / `C-p` 选择、`RET` 插入，`C-g` 取消。后端继续使用主模式和 Eglot，
-  `C-M-i` 保留原生绑定；无需手写连接函数。
-  主模式或模板有专用 `TAB` 行为时，以它们的绑定为准，例如 Org 的折叠和 Tempel 的字段切换。
-  更新配置后重启 Emacs，让已有缓冲区中的 Preview 模式退出。
-
-### 笔记与任务（内置 Org）
+Evil 默认启用：`i` / `a` 进入插入态，`ESC` 返回普通态，`hjkl` 移动，
+`v` / `V` 选择，`yy` / `dd` / `p` 复制、删除、粘贴，`u` / `C-r` 撤销、重做。
+`C-w s` / `C-w v` 分割窗口，`C-w h/j/k/l` 切换窗口。
+minibuffer 保留 Emacs 按键，`C-n` / `C-p` 选候选，`RET` 确认，`M-RET` 提交原样输入。
 
 | 按键 | 用途 |
 | --- | --- |
-| `C-c c i` | 收集到 `~/org/inbox.org` |
-| `C-c c t` | 创建 TODO 到 `~/org/tasks.org` |
-| `C-c c n` | 新笔记作为标题收集到 `~/org/notes.org` |
-| `C-c C-c` / `C-c C-k` | 完成 / 取消当前 capture |
-| `C-c a` | agenda，只扫描 inbox 和 tasks |
-| `C-c l` / `C-c C-l` | 存储 / 插入 Org 链接 |
-| `C-c C-o` | 打开光标处链接 |
-| `C-x C-f` / `C-x d` | 打开笔记文件 / 用 Dired 浏览 `~/org/notes/` |
-| `M-x rgrep` | 在笔记目录中全文搜索 |
+| `C-c t e` | 切换 Evil |
+| `M-o` / `C-x k` / `C-x C-b` | 切换窗口 / 关闭缓冲区 / ibuffer |
+| `C-c f f` / `C-c f r` / `C-c f R` | 打开 / 最近文件 / 重命名当前文件 |
+| `C-c t l` / `C-c t w` / `C-c t t` | 行号 / 软换行 / 截断长行 |
+| `C-c t s` / `C-c t f` | whitespace / 全屏 |
+| `C-x b` / `C-x C-r` / `M-y` | Consult 缓冲区 / 最近文件 / kill ring |
+| `M-g g` / `M-g l` / `C-c s` | 跳转行号 / 当前缓冲区搜索 / ripgrep |
+| `C-c d` | 复制当前行或选区（`duplicate-dwim`） |
 
-文件名相对于 `org-directory`（默认 `~/org/`）解析；新笔记不会加入 agenda。
-保留一个文件一条笔记的旧文件也能直接打开、编辑和插入标准文件链接。
-需要稳定的标题链接时，执行 `M-x org-id-get-create` 创建 ID，再存储、插入链接。
+已删除原先自定义的行首跳转、整行剪切复制、移动行、分屏、路径复制、sudo 编辑等函数。
+普通态使用 Evil 对应命令；插入态中的 `C-a`、`C-w`、`M-w`、`C-g` 等遵循上游行为。
+不再提供 `C-c f y` 和 `C-c f s`。
 
-Org 不会自动生成公式预览，LaTeX 保持原始文本，避免打开大篇数学笔记时卡顿。
-AAS、Tempel 保留现有数学片段：例如 `mk` 插入行内公式，`dm` 插入独立公式，
-公式内 `;a` 展开为 `\alpha`、`ff` 展开分式模板。模板内用 `TAB` / `S-TAB` 切换位置。
-`org-ratex-in-math-p` 用于正确识别含列表样式行的数学环境。
-`dvisvgm` 为可选的 SVG 公式预览工具。
+代码中 `TAB` 先缩进，再通过 `consult-completion-in-region` 在 Vertico 中选择补全。
+Org 和 CDLaTeX 有自己的 `TAB` 行为。没有自动内联补全建议。
 
-### 中文输入（Rimel，`C-\`）
+## Org 与数学输入
 
-使用 [Tao-Boy/rimel](https://github.com/Tao-Boy/rimel)，通过 `use-package :vc`
-跟踪仓库最新提交。其 C 模块需要编译器、`make`、`pkg-config`、librime 开发文件
-（≥ 1.8）及 Rime 方案数据。Debian/Ubuntu 可安装
-`build-essential pkg-config librime-dev rime-data-luna-pinyin`。
+`C-c c` 打开 capture（`i` 收集、`t` 任务、`n` 笔记），`C-c a` 打开 agenda，
+`C-c l` 存储链接。默认笔记目录为 `~/org/`，agenda 只扫描 `inbox.org` 和 `tasks.org`。
+笔记使用标准 file/id 链接；旧 Denote 链接需要改为标准链接。
+Org 不在打开文件时自动生成公式预览。
 
-MELPA 的同名包接口不同；如果已安装，应先用 `M-x package-delete` 卸载旧的
-`rimel-<版本号>` 再重启，由 `:vc` 安装此项目。原有 `rime/` 用户数据目录继续使用。
+Org、LaTeX/AUCTeX 缓冲区自动启用 CDLaTeX。
+原有关键词尽量保留，**关键词后现在按 `TAB` 展开**：
 
-`C-\` 切换输入法。首次激活时可在后台编译模块，也可执行
-`M-x rimel-compile-module`。候选统一在内置回显区显示，无需 posframe。
-在代码、英文字母或数字之后、大写字母、Org 源码块和数学公式中自动使用英文。
-
-| 按键 | 用途 |
+| 输入 | 结果 |
 | --- | --- |
-| `C-c r s` | 选择方案，如 `luna_pinyin_simp` |
-| `C-c r a` | 切换 Rime 西文模式 |
-| `C-c r f` | 下一次组字忽略自动英文判断 |
-| `C-c r d` | 修改配置后后台部署 |
+| `mk TAB` / `dm TAB` | `\(...\)` / `\[...\]` |
+| `ff TAB` / `sq TAB` | 分式 / 平方根 |
+| `sr TAB` / `cb TAB` | 平方 / 立方 |
+| `sum TAB` / `prod TAB` / `int TAB` / `lim TAB` | 求和 / 连乘 / 积分 / 极限 |
+| `jk TAB` / `kj TAB` | 下标 / 上标 |
+| `lr( TAB`、`lr[ TAB`、`lr{ TAB`、`lr\| TAB` | 成对的 `\left...\right` |
+| `xx TAB`、`inn TAB`、`nin TAB`、`AA TAB`、`EE TAB` | 乘号、属于、不属于、全称、存在 |
+| `oo TAB`、`pd TAB`、`nbl TAB` | 无穷、偏导、梯度 |
+| `sin TAB`、`cos TAB`、`tan TAB`、`log TAB`、`ln TAB`、`exp TAB` | 数学函数 |
 
-配置与词库保存在 `rime/`；方案列表在 `rime/default.custom.yaml` 中设置。
-编译参数、方案数据路径和 Nix 支持见 [Rimel 文档](https://github.com/Tao-Boy/rimel#安装)。
+除了 `mk`、`dm`，这些关键词只在数学环境中展开。
+Org 中 `TAB` 由内置 `org-try-cdlatex-tab` 协调，标题仍可折叠；
+在正文行中途插入 `mk`、`dm` 时，用 **`C-c TAB`** 直接调用 CDLaTeX。
 
-### AI 编程助手（ECA，`C-c e`）
+希腊字母继续用 `;` 前缀：`;a` → `\alpha`、`;t` → `\theta`、`;u` → `\tau` 等，
+大写字母键保留原有映射。变体使用 CDLaTeX 的第二层：`;;e` → `\varepsilon`、
+`;;f` → `\varphi`，替代原来的 `:e`、`:f`。
+符号使用 `;<` / `;>` / `;!` / `;~` / `;+` / `;-` / `;.`
+输入 `\leq` / `\geq` / `\neq` / `\approx` / `\pm` / `\mp` / `\cdot`；
+原来 `<=`、`>=`、`!=` 等不再自动展开。
 
-| 按键 | 用途 |
-| --- | --- |
-| `C-c e e` / `C-c e t` | 启动 / 显示或隐藏聊天窗口 |
-| `C-c e i` / `C-c e a` | 在当前缓冲区提问 / 添加文件或选区上下文 |
-| `C-c e n` / `C-c e s` | 新建 / 切换对话 |
-| `C-c e w` / `C-c e m` | 工作区面板 / 选择模型 |
-| `C-c e ,` / `C-c e q` | 设置 / 停止服务 |
+`TAB` 跳到下一个可输入位置。CDLaTeX 不提供 Tempel 的反向字段跳转，
+`S-TAB` 保留主模式行为；需要向前移动时使用 Evil 移动命令。
+插入态的 `;` 是数学前缀，输入字面分号用 `C-q ;`。
+数学判断使用 Org、CDLaTeX 和 AUCTeX 自带逻辑。
 
-首次使用自动下载 `eca` 服务端，也可将其放入 `PATH` 或设置 `eca-custom-command`。
-模型、服务商和 API key 在服务端配置：`M-x eca-open-global-config`。
+## 中文输入
 
-## 启动与性能
+使用 MELPA 的上游 liberime 与 Rimel。Emacs 需要动态模块支持，系统需要 librime、
+Rime 方案数据；自动编译 liberime 时还需要 C 编译器和 `make`。
+Debian/Ubuntu 可安装 `build-essential librime-dev rime-data-luna-pinyin`。
+也可以按 [liberime 文档](https://github.com/emacs-rime/liberime) 设置预编译的 `liberime-module-file`。
 
-- 启动期间推迟 GC，完成后使用 64 MB 阈值；minibuffer 打开时暂停 GC。
-- 启动期跳过文件名处理器，在 `after-init-hook` 中恢复，保留命令行 `.gz`、TRAMP 支持。
-- Emacs 31 的 `load-path-filter-function` 缓存库目录，先加载 `regexp-opt` 防止递归。
-- package quickstart 预先生成 autoloads；已安装包通过 `:ensure` 快速路径跳过 package.el。
-- Org、Dired、AUCTeX、Eglot、Rimel、ECA、Consult 延迟加载；Vertico、which-key、会话记录等在首次按键前启用。
-- `*scratch*` 使用 `fundamental-mode`，需要求值可切换到 `lisp-interaction-mode`。
-- 首帧直接使用主题底色，避免闪白；安装包时进行原生编译。
-- tree-sitter 使用 Emacs 31 自带的固定版本配方，缺少语法库时询问安装，失败时退回传统模式。
+`C-\` 切换输入法，`C-c r s` 选择方案，`C-c r d` 部署。
+候选显示在回显区；用户数据在配置目录下的 `rime/`。
+在 Evil 普通/选择/移动/操作符状态、代码、英文字母之后、大写字母、
+Org 源码块和数学环境中，使用 Rimel 内置断言自动输入英文。
+旧实现的 `C-c r a`、`C-c r f` 没有上游对应命令，已移除。
 
-启动后显示 `Emacs ready in …`，也可执行 `M-x emacs-init-time`。
-`emacs --debug-init` 启用 use-package 统计，通过 `M-x use-package-report` 查看。
-本次精简后的启动耗时尚未重新测量；旧配置的性能数字不再作为当前结果。
+## ECA
+
+`C-c e` 前缀沿用：`e` 启动、`t` 显示/隐藏聊天、`i` 行内提问、`a` 添加上下文、
+`n` 新对话、`s` 切换对话、`w` 工作区、`m` 模型、`,` 设置、`q` 停止。
+模型和 API key 通过 `M-x eca-open-global-config` 配置。
+
+自动下载请求形如：
+
+```text
+https://gh-proxy.org/https://github.com/editor-code-assistant/eca/releases/download/<版本>/eca-native-<平台>.zip
+```
+
+唯一新增的匿名 advice 位于下载请求层，支持 `url-retrieve` 和 `curl`。
+ECA 继续选择版本、平台，并用原始资产 URL 查找 digest、校验文件。
+非 GitHub 的自定义下载地址保持原样；GitHub 发布元数据 API 使用上游地址。
+也可把 `eca` 放入 PATH 或设置 `eca-custom-command`。
+
+## 文件结构
+
+`init.el` 按顺序加载 `lisp/init-*.el`，包分别放在对应功能模块；
+`early-init.el` 保留启动优化，`custom.el` 最后加载。
+保留现有 tree-sitter、Eglot、字体、GC 和会话记录设置。
+删除了自定义包安装快速路径，使用标准 `use-package :ensure`。
+
+验证使用 Emacs 31.1：启动、Evil、Org/AUCTeX 的 CDLaTeX 输入、
+Consult、上游 liberime 原生模块与 Rimel 中文输入、ECA URL 改写和损坏文件校验。
+联网下载 ECA 服务端未在该检查中执行。

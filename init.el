@@ -15,10 +15,7 @@ running %s, some features will be missing or broken." emacs-version)))
 
 ;;;; Load path
 
-(dolist (dir '("lisp" "site-lisp"))
-  (let ((path (expand-file-name dir user-emacs-directory)))
-    (when (file-directory-p path)
-      (push path load-path))))
+(add-to-list 'load-path (locate-user-emacs-file "lisp/"))
 
 ;;;; Modules
 
@@ -26,14 +23,14 @@ running %s, some features will be missing or broken." emacs-version)))
 (require 'init-package)      ; Mirrors, package.el + use-package
 (require 'init-basic)        ; Better defaults, GC policy, session state
 (require 'init-ui)           ; Theme, fonts, mode line, scrolling
-(require 'init-keybindings)  ; Native keys plus a few additions
+(require 'init-keybindings)  ; Evil and shared bindings
 (require 'init-completion)   ; Vertico, Orderless, Consult and TAB completion
-(require 'init-snippet)      ; Tempel, AAS
+(require 'init-snippet)      ; CDLaTeX
 (require 'init-dired)        ; Dired, Dired-X
 (require 'init-prog)         ; Tree-sitter, Eglot, programming defaults
 (require 'init-latex)        ; AUCTeX
 (require 'init-org)          ; Org, capture and agenda
-(require 'init-rime)         ; Chinese input: Tao-Boy/rimel
+(require 'init-rime)         ; Chinese input: upstream liberime + Rimel
 (require 'init-ai)           ; ECA
 
 ;;;; Customize
