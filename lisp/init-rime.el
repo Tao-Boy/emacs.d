@@ -19,8 +19,7 @@
   :custom
   (rimel-show-candidate 'prompt)
   (rimel-disable-predicates
-   '(rimel-predicate-evil-mode-p
-     rimel-predicate-prog-in-code-p
+   '(rimel-predicate-prog-in-code-p
      rimel-predicate-after-alphabet-char-p
      rimel-predicate-current-uppercase-letter-p
      rimel-predicate-org-in-src-block-p

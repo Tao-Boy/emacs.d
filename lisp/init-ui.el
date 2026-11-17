@@ -8,7 +8,18 @@
 
 ;;;; Theme
 
-(load-theme 'modus-vivendi t)
+(use-package tau-gruvbox-theme
+  :ensure nil
+  :no-require t
+  :demand t
+  :init
+  (add-to-list 'custom-theme-load-path (locate-user-emacs-file "site-lisp/"))
+  :config
+  (let* ((source (locate-user-emacs-file "site-lisp/tau-gruvbox-theme.el"))
+         (load-prefer-newer t))
+    (when (file-newer-than-file-p source (concat source "c"))
+      (byte-compile-file source))
+    (load-theme 'tau-gruvbox t)))
 
 ;;;; Fonts
 

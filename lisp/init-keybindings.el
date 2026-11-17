@@ -1,25 +1,12 @@
-;;; init-keybindings.el --- Evil and shared bindings -*- lexical-binding: t; -*-
+;;; init-keybindings.el --- Native Emacs bindings -*- lexical-binding: t; -*-
 
 ;;; Code:
 
-(use-package evil
-  :ensure t
-  :demand t
-  :init
-  (setq evil-want-keybinding nil
-        evil-want-C-u-scroll t
-        evil-want-C-i-jump nil
-        evil-undo-system 'undo-redo)
-  :config
-  (evil-mode 1))
+(use-package repeat
+  :hook (tau-first-input . repeat-mode))
 
-(use-package evil-collection
-  :ensure t
-  :after evil
-  :demand t
-  :custom (evil-collection-want-unimpaired-p nil)
-  :config
-  (evil-collection-init '(dired ibuffer help)))
+(use-package delsel
+  :hook (tau-first-input . delete-selection-mode))
 
 (use-package emacs
   :bind (("M-o" . other-window)
@@ -34,7 +21,6 @@
          ("R" . rename-visited-file)
          :prefix-map tau-toggle-map
          :prefix "C-c t"
-         ("e" . evil-mode)
          ("l" . display-line-numbers-mode)
          ("w" . visual-line-mode)
          ("t" . toggle-truncate-lines)
