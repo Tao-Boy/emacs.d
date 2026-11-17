@@ -3,6 +3,7 @@
 面向 **Emacs 31.1** 的个人配置，使用 `use-package` 管理：
 
 - Emacs 原生按键与内置 repeat、delete-selection。
+- 本地 `tau-gruvbox` 暗色主题：暖灰背景、米色文字和 Gruvbox 风格配色。
 - Vertico + Orderless + Consult：minibuffer 补全、搜索和代码补全。
 - Org + CDLaTeX + AUCTeX：笔记、任务和数学输入。
 - 上游 [liberime](https://github.com/emacs-rime/liberime) +
@@ -117,5 +118,22 @@ Org 源码块和数学环境中，使用 Rimel 内置断言自动输入英文。
 保留现有 tree-sitter、Eglot、字体、GC 和会话记录设置。
 删除了自定义包安装快速路径，使用标准 `use-package :ensure`。
 
+### 本地主题与字节编译
+
+主题源码为 `site-lisp/tau-gruvbox-theme.el`，由 `init-ui.el` 中的
+`use-package` 配置默认启用，无第三方依赖。使用 Gruvbox 的暖色暗色调，
+背景 `#282828`、正文 `#ebdbb2`，覆盖代码、Org、补全、输入法和诊断提示。
+首帧使用相同底色，避免加载主题时闪白。
+
+**仅此主题自动字节编译**：首次启动或主题源码更新后的下次启动，
+生成或更新 `site-lisp/tau-gruvbox-theme.elc`，随后加载编译结果；
+源码未变化时直接复用。其余配置不参与此编译流程，
+`load-prefer-newer` 也只在加载本主题时临时启用。
+`*.elc` 已被 Git 忽略，不提交生成文件。
+
+配色参考 [Gruvbox](https://github.com/morhetz/gruvbox)。
+主题是独立的 Emacs Custom theme，可通过 `M-x load-theme RET tau-gruvbox RET` 重新加载。
+在当前会话修改主题后，执行 `M-x load-library RET init-ui RET` 可重新编译并应用。
+
 验证使用 Emacs 31.1：启动与原生按键、Org/AUCTeX 的 CDLaTeX 输入、
-Consult、上游 liberime 原生模块与 Rimel 中文输入。
+Consult、上游 liberime 原生模块与 Rimel 中文输入，以及主题字节编译与加载。
